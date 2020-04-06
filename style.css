@@ -1,0 +1,99 @@
+@import url('https://fonts.googleapis.com/css2?family=Work+Sans&display=swap');
+body{
+    margin: 0;
+    background: rgb(187, 120, 120);
+    font-family: 'Work Sans', sans-serif;
+    color: white;
+}
+
+ul{
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+a{
+    text-decoration: none;
+}
+.container{
+    text-align: center;
+}
+.logo{
+    width: 130px;
+    display: flex;
+}
+header{
+    width: 100%;
+    background-color: rgba(0, 255, 170, 0.514);
+    display: flex;
+    justify-content: space-around;
+}
+header nav ul{
+    position: inherit;
+    width: auto;
+    height: auto;
+    display: flex;
+    padding-top:0;
+    margin: 20px;
+}
+header nav ul li{
+    color: black;
+    background-color: inherit;
+    margin: 2em;
+}
+section{
+    width: 100%;
+    display: flex;
+    justify-content: space-evenly;
+}
+section .back-logo{
+    width: 40px;
+}
+section main img{
+    width:200px;
+}
+section .sidebar{
+    width:300px;
+    margin: 100px;
+}
+section .sidebar ul{
+    background: rgb(247, 187, 75);
+}
+section .sidebar ul li{
+    padding: 20px;
+    color: white;
+    border-style: solid;
+}
+section .sidebar ul li:first-child{
+    background: rgb(187, 120, 120);
+    border-style: none;
+}
+section .sidebar ul li:first-child a{
+    opacity: 0.5;
+}
+section .main .nav-bar{
+    position: inherit;
+    display: flex;
+    width: auto;
+    height: auto;
+}
+section .main .nav-bar li{
+    color: white;
+    margin: 0.5em;
+}
+section .main main .game-on{
+    display: flex;
+    justify-content: space-evenly;
+}
+section .main main .game-on h2{
+    left: 20px;
+} 
+section .main main .game-on img{
+    width: 150px;
+    height: 150px;
+}
+section .main main .game-on h3{
+    padding: 1em;
+}
+footer a{
+    color: #EEE;
+}
