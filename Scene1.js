@@ -84,12 +84,22 @@ class Scene1 extends Phaser.Scene{
             ref.scene.start("game2");    
         });
         //invoke when click to sound icon then play audio
-        this.sound.on('pointerdown', function (pointer) {
+        // this.sound.on('pointerdown', function (pointer) {
+        //     console.log("click");
+        //     console.log(ref);
+        //     ref.voice.play();   
+        // });
+        this.play_audio(ref.sound,ref.voice);
+    }
+    play_audio(item,audio){
+        var ref = this;
+        ref.audio = audio;
+        ref.item = item;
+        ref.item.on('pointerdown', function (pointer) {
             console.log("click");
             console.log(ref);
-            ref.voice.play();   
+            ref.audio.play();   
         });
-        
     }
     animation(ref,pos_x,pos_y){
         var timeline = ref.tweens.createTimeline();
