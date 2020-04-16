@@ -14,6 +14,7 @@ class Scene1 extends Phaser.Scene{
         this.load.image('drop', 'image/53.png');
         this.load.image('sound', 'image/loa.png');
         this.load.image('bag', 'image/41.png');
+        
         this.load.audio('sfx','voice.mp3');
     }
     create(){
@@ -82,7 +83,7 @@ class Scene1 extends Phaser.Scene{
             console.log(ref);
             ref.scene.start("game2");    
         });
-
+        //invoke when click to sound icon then play audio
         this.sound.on('pointerdown', function (pointer) {
             console.log("click");
             console.log(ref);
