@@ -18,55 +18,50 @@ class Controller extends Phaser.Scene{
         this.load.audio('sfx','voice.mp3');
     }
     create(){
-        //create next_button arrow but set it invisible and turn around
-            this.next_button = this.add.sprite(900, 700, 'next_button').setInteractive();
-            this.next_button.setVisible(false);
-            this.next_button.angle = 180;
+        // //create next_button arrow but set it invisible and turn around
+        //     this.next_button = this.add.sprite(900, 700, 'next_button').setInteractive();
+        //     this.next_button.setVisible(false);
+        //     this.next_button.angle = 180;
 
-        //create and display items to canvas
-            this.drop = this.physics.add.sprite(this.drop_X ,this.drop_Y,'drop').setOrigin(0,0);
-            this.drag = this.physics.add.sprite(this.drag_X ,this.drag_Y,'drag').setInteractive();
+        // //create and display items to canvas
+        //     this.drop = this.physics.add.sprite(this.drop_X ,this.drop_Y,'drop').setOrigin(0,0);
+        //     this.drag = this.physics.add.sprite(this.drag_X ,this.drag_Y,'drag').setInteractive();
         
-        //scale items in canvas
-            this.next_button.setScale(0.5);
-            this.drop.setScale(1.5);
-            this.drag.setScale(1.5);
+        // //scale items in canvas
+        //     this.next_button.setScale(0.5);
+        //     this.drop.setScale(1.5);
+        //     this.drag.setScale(1.5);
 
-        //set drag item and drop zone item
-            this.setDraggable(this.drag);
-            this.setDroppable(this.drop);
+        // //set drag item and drop zone item
+        //     this.setDraggable(this.drag);
+        //     this.setDroppable(this.drop);
     
-        //set event listener to mouse 
-            this.drag_and_drop(this.drag,this.drop,this.next_button);       
+        // //set event listener to mouse 
+        //     this.drag_and_drop(this.drag,this.drop,this.next_button);       
 
-        // this.scene.launch('SceneA');
-        // this.scene.launch('SceneB');
+        this.scene.launch('SceneA');
+        this.scene.launch('SceneB');
 
-        // this.currentScene = this.scene.get('SceneA');
+        this.currentScene = this.scene.get('SceneA');
     }
     setDraggable  (dragItem)  {
         //set physics of the ball
         dragItem.setCollideWorldBounds(true);
-        console.log(this);
 
         //allow items to be dragged
         this.input.setDraggable(dragItem);
     }
     setDroppable  (dropItem)  {
         var zone = this.add.zone(dropItem.x + dropItem.displayWidth/4, dropItem.y + dropItem.displayHeight/4).setRectangleDropZone(dropItem.displayWidth/2, dropItem.displayHeight/2);
-        // var graphics = this.add.graphics();
-        // graphics.lineStyle(2, 0xffff00);
-        // graphics.strokeRect(zone.x, zone.y, zone.input.hitArea.width, zone.input.hitArea.height);
+        var graphics = this.add.graphics();
+        graphics.lineStyle(2, 0xffff00);
+        graphics.strokeRect(zone.x, zone.y, zone.input.hitArea.width, zone.input.hitArea.height);
     }
     drag_and_drop  (dragItem,dropItem,next_button)  {
-        // var this = this;
-        console.log(this);
-        console.log(dragItem);
-        this.dragItem = dragItem;
-        console.log(this.dragItem);
+
+
         //invoke when dragging
         this.input.on('drag', function (pointer, gameObject, dragX, dragY) {
-            console.log(gameObject);
             gameObject.x = dragX;
             gameObject.y = dragY;
         });
@@ -77,7 +72,7 @@ class Controller extends Phaser.Scene{
             gameObject.input.enabled = false;
             this.animation(dragItem,dropZone.x + dropZone.input.hitArea.width/2,dropZone.y + dropZone.input.hitArea.height/2);
             //visiblize next button
-            this.show_next_button(this.next_button);
+            this.show_next_button(next_button);
         }.bind(this));
     
         //invoke when drop, if in the drop zone then execute
@@ -85,13 +80,9 @@ class Controller extends Phaser.Scene{
             // console.log(this);
             if (!dropped) this.animation(dragItem,1200,700);
         }.bind(this));
-
-        
-        
+  
         //invoke when finish the valid pos
         next_button.on('pointerup', function (pointer) {
-            // console.log("click to invoke next scene");
-            //call to UI scene 
             this.events.emit('addScore');
         }.bind(this));   
     }
@@ -115,4 +106,7 @@ class Controller extends Phaser.Scene{
         //set visible next_button button
         setTimeout(function(){item.setVisible(true);},2000);
     }  
+    item_factory(posX, posY, item){
+        return this.physics.add.sprite(posX ,posY, item).setInteractive();
+    }
 }

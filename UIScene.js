@@ -8,7 +8,11 @@ class UIScene extends Phaser.Scene{
     }
     create()
     {
-        this.process_ball = this.add.sprite(40,40,'process_ball');
+        this.process_ball = [];
+        for (let i = 0; i < 4; i++)
+        {
+            this.process_ball[i] = this.add.sprite(40 + i*40,40,'process_ball');
+        }
         //  Our Text object to display the Score
         var info = this.add.text(10, 10, 'Score: 4');
 
@@ -20,12 +24,15 @@ class UIScene extends Phaser.Scene{
 
             console.log("update UI bar");
             this.score--;
+            if(this.score < 0){
+                //change to end state
+            }
 
             info.setText('Score: ' + this.score);
             var timeline = this.tweens.createTimeline();
                     timeline.add({
-                        targets: this.process_ball,
-                        x: 400,
+                        targets: this.process_ball[this.score],
+                        x: this.process_ball[this.score].x + 400,
                         y: 40,
                         ease: 'Power1',
                         duration: 1000

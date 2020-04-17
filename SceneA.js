@@ -12,25 +12,20 @@ class SceneA extends Phaser.Scene {
 
     create ()
     {
-        
-        this.next_button = this.add.sprite(900, 700, 'next_button').setInteractive();
+        var Controller = this.scene.get('Controller');
+
+        this.next_button = Controller.item_factory(900, 700,'next_button');
         this.next_button.setVisible(false);
         this.next_button.angle = 180;
 
-        this.next_button.setScale(0.5);
-
-        this.drop = this.physics.add.sprite(this.drop_X ,this.drop_Y,'drop').setOrigin(0,0);
-        this.drag = this.physics.add.sprite(this.drag_X ,this.drag_Y,'drag').setInteractive();
-        
-
-        // var ref = this;
-        var Controller = this.scene.get('Controller');
+        this.drop = Controller.item_factory(this.drop_X,this.drop_Y,'drop').setOrigin(0,0)
+        this.drag = Controller.item_factory(this.drag_X,this.drag_Y,'drag');
 
         this.next_button.setScale(0.5);
         this.drop.setScale(1.5);
         this.drag.setScale(1.5);
+        
 
-        // Controller.convert(this.drag);
         Controller.setDraggable(this.drag);
         Controller.setDroppable(this.drop);
 
