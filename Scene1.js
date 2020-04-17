@@ -6,7 +6,7 @@ class Scene1 extends Phaser.Scene{
         this.drop_X = 300;
         this.drop_Y = 200;
         this.check;
-        this.changeScene;
+        this.overlapping = false;
     }
     preload(){
         this.load.image('next','image/back_icon.png');
@@ -28,35 +28,37 @@ class Scene1 extends Phaser.Scene{
         this.sprite.angle = 180;
 
         //create and display items to canvas
-        this.drop = this.physics.add.sprite(this.drop_X ,this.drop_Y,'drop').setInteractive();
-        this.sound = this.physics.add.sprite(this.drag_X ,this.drag_Y,'sound').setInteractive();
-        this.bag = this.physics.add.sprite(this.drag_X ,this.drag_Y,'bag').setInteractive();
+        this.drop = this.physics.add.sprite(this.drop_X ,this.drop_Y,'drop').setOrigin(0,0);
+        // this.sound = this.physics.add.sprite(this.drag_X ,this.drag_Y,'sound').setInteractive();
+        // this.bag = this.physics.add.sprite(this.drag_X ,this.drag_Y,'bag').setInteractive();
         this.drag = this.physics.add.sprite(this.drag_X ,this.drag_Y,'drag').setInteractive();
 
         //scale items in canvas
         this.sprite.setScale(0.5);
         this.drop.setScale(1.5);
         this.drag.setScale(1.5);
-        this.bag.setScale(1.5);
+        // this.bag.setScale(1.5);
+        var zone = this.add.zone(this.drop_X + this.drop.displayWidth/4, this.drop_Y + this.drop.displayHeight/4).setRectangleDropZone(this.drop.displayWidth/2, this.drop.displayHeight/2);
+        var graphics = this.add.graphics();
+        graphics.lineStyle(2, 0xffff00);
+        graphics.strokeRect(zone.x, zone.y, zone.input.hitArea.width, zone.input.hitArea.height);
+
 
         //set physics of the ball
         this.drag.setCollideWorldBounds(true);
 
         //allow items to be dragged
         this.input.setDraggable(this.drag);
-        this.input.setDraggable(this.drop);
-        this.input.setDraggable(this.sound);
-        this.input.setDraggable(this.bag);
-
+        // this.input.setDraggable(this.drop);
+        // this.input.setDraggable(this.sound);
+        // this.input.setDraggable(this.bag);
 
         
         
-
         this.handler();
     }
     handler(){
-        //invoke when start to drag
-        this.input.on('dragstart', function (pointer,gameObject) {});
+        var ref = this;
 
         //invoke when dragging
         this.input.on('drag', function (pointer, gameObject, dragX, dragY) {
@@ -64,31 +66,28 @@ class Scene1 extends Phaser.Scene{
             gameObject.y = dragY;
         });
 
-        //declare a this reference for convinient
-        var ref = this;
+        //invoke the moment drop event occur, if not in the drop zone then execute
+        this.input.on('drop', function (pointer, gameObject, dropZone) {
+            gameObject.input.enabled = false;
+            ref.animation(ref,dropZone.x + dropZone.input.hitArea.width/2,dropZone.y + dropZone.input.hitArea.height/2);
+            //show the next button
+            ref.change_state();
+        });
+    
+        //invoke when drop, if in the drop zone then execute
+        this.input.on('dragend', function (pointer, gameObject, dropped) {
+            if (!dropped) ref.animation(ref,ref.drag_X,ref.drag_Y);
+        });
 
-        //invoke when release the dragging items
-        // this.input.on('dragend', function () {
-        //     //create animation to return to original pos if invalid drop
-        //     this.animation(this,this.drag_X,this.drag_Y);
-        //     console.log("drag end");
-        //     //overlapping process: ****NEED TO MODIFY THIS SHIT RIGHT AWAY****
-        //     var ref = this;
-        //     ref.check = ref.physics.add.overlap(ref.drag,ref.drop,ref.callback,null,ref)
-        // },ref);
-
+        
+        
         //invoke when finish the valid pos
         this.sprite.on('pointerdown', function (pointer) {
             console.log("click");
             console.log(ref);
             ref.scene.start("game2");    
         });
-        //invoke when click to sound icon then play audio
-        // this.sound.on('pointerdown', function (pointer) {
-        //     console.log("click");
-        //     console.log(ref);
-        //     ref.voice.play();   
-        // });
+        
         this.play_audio(ref.sound,ref.voice);
     }
     play_audio(item,audio){
@@ -112,17 +111,10 @@ class Scene1 extends Phaser.Scene{
                 });
                 timeline.play();
     }
-    callback(){
-        //set object to unDraggable
-        this.input.setDraggable(this.drag,false);
-
-        //create animation to place to exact pos
-        this.animation(this,this.drop_X+100,this.drop_Y);
+    change_state(){
         var ref = this;
-        
         //set visible next button
         setTimeout(function(){ref.sprite.setVisible(true);},2000);
-
-        console.log("end callback");
+        console.log("end");
     }  
 }
