@@ -17,6 +17,8 @@ class UIScene extends Phaser.Scene{
 
     create()
     {
+        this.registry.set('score', this.score);
+
         this.process_ball = [];
         for (let i = 0; i < 4; i++)
         {
@@ -30,16 +32,38 @@ class UIScene extends Phaser.Scene{
         var Controller = this.scene.get('Controller');
 
         //  Listen for events from it
-        Controller.events.on('addScore', function () {
-            console.log("update UI bar");
-            this.score--;
-            
-            //if the score is below zero, change to winning scene
-            info.setText('Score: ' + this.score); //for debugging
+        var ref = this;
+        Controller.events.on('minusScore', function () {
+            if(this.score > 0){
+                ref.score--;
+                
+                //if the score is below zero, change to winning scene
+                info.setText('Score: ' + ref.score); //for debugging
 
-            //animation to move the process ball to the right
-            Controller.animation(this.process_ball[this.score], this.process_ball[this.score].x + 400, this.posY);
-
+                //animation to move the process ball to the right
+                Controller.animation(ref.process_ball[ref.score], ref.process_ball[ref.score].x + 400, ref.posY);
+            }
+            this.registry.set('score', this.score);
         }, this);
+        Controller.events.on('addScore', function () {
+
+            if(this.score < 4){
+
+                //if the score is below zero, change to winning scene
+                info.setText('Score: ' + ref.score); //for debugging
+
+                //animation to move the process ball to the right
+                Controller.animation(ref.process_ball[ref.score], ref.process_ball[ref.score].x - 400, ref.posY);
+            
+                ref.score++;
+            }
+            this.registry.set('score', this.score);
+        }, this);
+    }
+    destroy(){
+        for(let i = 0; i < 4; i++){
+            this.process_ball[i].destroy(true);
+            this.process_ball[i] = null;
+        }
     }
 }
