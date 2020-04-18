@@ -7,6 +7,6 @@ var config={
             debug: false
         }
     },
-    scene: [Controller, SceneA, SceneB, UIScene]
+    scene: [Controller, SceneA, SceneB, SceneC, SceneD, UIScene]
 }
 var game = new Phaser.Game(config);
