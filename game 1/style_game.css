@@ -66,13 +66,13 @@ body{
     padding: 0px 10px 0px 10px;
 }
 
-.sound{
+#btnSpeak{
     background-image: url("../image/loa.png");
     position: absolute;
     width: 40px;
     height: 40px;
     top:25px;
-    left:20px;
+    left:20px;  
     background-size: 100%;
 
 }
@@ -113,4 +113,7 @@ body{
     width: 125px;
     height: 125px;
     
+}
+#voiceList{
+    visibility: hidden;
 }
