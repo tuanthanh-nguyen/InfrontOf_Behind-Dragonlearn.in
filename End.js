@@ -4,12 +4,11 @@ class End extends Phaser.Scene{
         super('End');
     }
 
-    // preload(){
-    //     this.preload.image('end', 'image/icon_logo.jpg');
-    // }
-
-
     create(){
-        this.add.sprite(this.cameras.main.centerX, this.cameras.main.centerY, 'end');
+        var Controller = this.scene.get("Controller");
+
+        this.end = Controller.item_factory ( this.cameras.main.centerX, this.cameras.main.centerY, 'end');
+
+        this.end.setScale(0.5);
     }
 }
