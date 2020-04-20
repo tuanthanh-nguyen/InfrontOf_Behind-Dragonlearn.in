@@ -36,7 +36,7 @@ class SceneD extends Phaser.Scene {
         Controller.setDroppable( this.drop);
         Controller.setDroppable( this.drop0);
 
-        Controller.drag_and_drop(this.drag, this.drop0, null);
+        Controller.drag_and_drop(this.drag, this.drop0, this.drop);
     }
 
     
