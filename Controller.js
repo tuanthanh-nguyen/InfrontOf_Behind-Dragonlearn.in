@@ -6,22 +6,26 @@ class Controller extends Phaser.Scene{
         this.load.image('next_button','image/back_icon.png');
         this.load.image('drag', 'image/35.png');
         this.load.image('drop', 'image/53.png');
+        this.load.image('drop1', 'image/47.png');
         this.load.image('end', 'image/icon_logo.jpg');
         // this.load.image('sound', 'image/loa.png');
-        // this.load.image('bag', 'image/41.png');
+        this.load.image('bag', 'image/41.png');
         
         // this.load.audio('sfx','voice.mp3');
     }
 
 
     create(){
+        // this.cameras.main.backgroundColor.setTo(255,255,255);
+
         //create next_button arrow but set it invisible and turn around
-        this.next_button = this.add.sprite(900, 800, 'next_button').setInteractive();
+        this.next_button = this.add.sprite(1200, 900, 'next_button').setInteractive();
         this.next_button.setVisible(false);
         this.next_button.angle = 180;
         //scale items in canvas
         this.next_button.setScale(0.3);
 
+        //launch the first scene
         this.scene.launch('SceneA');
         //set current scene
         this.currentScene = this.scene.get('SceneA');
@@ -38,15 +42,10 @@ class Controller extends Phaser.Scene{
 
 
     setDroppable  (dropItem)  {
-        // this.zone = this.add.zone(dropItem.x + dropItem.displayWidth/4, dropItem.y + dropItem.displayHeight/4)
-        //                             .setRectangleDropZone(dropItem.displayWidth/1.5, dropItem.displayHeight/1.5);
-
-        dropItem.input.dropZone = true;
         
-        //show graphic zone for debug ;
-            // var graphics = this.add.graphics();
-            // graphics.lineStyle(2, 0xffff00);
-            // graphics.strokeRect(this.zone.x, this.zone.y, this.zone.input.hitArea.width, this.zone.input.hitArea.height);
+        if(dropItem != null) 
+            dropItem.input.dropZone = true;
+
     }
 
 
@@ -97,7 +96,6 @@ class Controller extends Phaser.Scene{
 
             //reset the item drag and drop
             var ref = this;
-            setTimeout(function(){ref.clear_scene(dragItem, dropItem, dropFake);},2000);
 
             //change to next scene
             setTimeout(function(){
@@ -106,11 +104,15 @@ class Controller extends Phaser.Scene{
                 
                 //if finish score then next scene will be end-scene
                 if(tmp <= 0){
-                    console.log("end scene appear");
+                    //clear the current scene item
+                    ref.currentScene.clear_item();
 
                     //destroy UI process-ball
                     ref.currentScene = ref.scene.get("UIScene");
                     ref.currentScene.destroy();
+
+                    //destroy next button
+                    ref.destroy(ref.next_button);
 
                     //change to ending scene
                     ref.scene.launch('End');
@@ -160,8 +162,10 @@ class Controller extends Phaser.Scene{
 
 
     destroy(item){
-        item.destroy(true);
-        item = null;
+        if(item!=null) {
+            item.destroy(true);
+            item = null;
+        }
     }
 
 
@@ -171,9 +175,6 @@ class Controller extends Phaser.Scene{
 
         this.destroy(dropItem);
 
-        if(dropFake!=null) this.destroy(dropFake);
-
-        //remove the drop zone effect so when the next scene invoke, the drop zone will not be active
-            // this.zone.removeInteractive();
+        this.destroy(dropFake);
     }
 }

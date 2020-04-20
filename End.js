@@ -6,7 +6,9 @@ class End extends Phaser.Scene{
 
     create(){
         var Controller = this.scene.get("Controller");
-        this.end = Controller.item_factory ( 200, 400, 'end').setOrigin(0,0)
-        console.log("it is me end scene");
+
+        this.end = Controller.item_factory ( this.cameras.main.centerX, this.cameras.main.centerY, 'end');
+
+        this.end.setScale(0.5);
     }
 }
