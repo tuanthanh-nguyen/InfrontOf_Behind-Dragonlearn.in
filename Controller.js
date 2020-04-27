@@ -8,10 +8,11 @@ class Controller extends Phaser.Scene{
         this.load.image('drop', 'image/53.png');
         this.load.image('drop1', 'image/47.png');
         this.load.image('end', 'image/icon_logo.jpg');
-        // this.load.image('sound', 'image/loa.png');
         this.load.image('bag', 'image/41.png');
         
-        // this.load.audio('sfx','voice.mp3');
+        this.load.image('sound', 'image/loa.png');
+        this.load.audio('infront','infront.mp3');
+        this.load.audio('behind','behind.mp3');
     }
 
 
@@ -26,7 +27,7 @@ class Controller extends Phaser.Scene{
         this.next_button.setScale(0.3);
 
         //create back_button arrow but set it invisible and turn around
-        this.back_button = this.add.sprite(150, 100, 'next_button').setInteractive();
+        this.back_button = this.add.sprite(150, 70, 'next_button').setInteractive();
         this.back_button.setVisible(true);
         //scale items in canvas
         this.back_button.setScale(0.3);
@@ -172,6 +173,10 @@ class Controller extends Phaser.Scene{
 
     item_factory(posX, posY, item){
         return this.physics.add.sprite(posX ,posY, item).setInteractive();
+    }
+
+    audio_factory(item){
+        return this.sound.add(item);
     }
 
 

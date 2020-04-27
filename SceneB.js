@@ -13,7 +13,15 @@ class SceneB extends Phaser.Scene {
 
     create ()
     {
-        this.text = this.add.text(500, 150, 'Put the ball behind the bag', { fontFamily: 'Verdana, Tahoma, serif' }, {fontSize: '60px'}, {color: 'black'} );
+        this.text = this.add.text(500, 200, 'Put the ball behind of the bag', 
+            {
+                fontSize: '40px',
+                fontFamily: 'Arial',
+                color: '#CCCCC',
+                align: 'center',
+                lineSpacing: 44,
+            }
+        );
 
         var Controller = this.scene.get('Controller');
 
@@ -25,12 +33,16 @@ class SceneB extends Phaser.Scene {
         
         this.bag = Controller.item_factory( this.drop_X, this.drop_Y-350, 'bag').setOrigin(0,0);
 
+        this.sound = Controller.item_factory( 350, 170, 'sound').setOrigin(0,0); 
+
+        this.voice = Controller.audio_factory('behind');
+
         this.drop0.setScale(1.5);
         // this.drop.setScale(1.5);
         this.bag.setScale(1.5);
         this.drag.setScale(1.5);
 
-        
+        Controller.play_audio(this.sound,this.voice);
 
         Controller.setDraggable( this.drag);
         Controller.setDroppable( this.drop);
@@ -58,5 +70,7 @@ class SceneB extends Phaser.Scene {
         Controller.clear_scene(this.drag);
         Controller.clear_scene(this.bag);
         Controller.clear_scene(this.text);
+        Controller.clear_scene(this.voice);
+        Controller.clear_scene(this.sound);
     }
 }
