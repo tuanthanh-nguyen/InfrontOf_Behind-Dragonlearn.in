@@ -16,7 +16,7 @@ class Controller extends Phaser.Scene{
 
 
     create(){
-        // this.cameras.main.backgroundColor.setTo(255,255,255);
+        this.cameras.main.backgroundColor.setTo(255,255,255);
 
         //create next_button arrow but set it invisible and turn around
         this.next_button = this.add.sprite(1200, 900, 'next_button').setInteractive();
@@ -25,10 +25,19 @@ class Controller extends Phaser.Scene{
         //scale items in canvas
         this.next_button.setScale(0.3);
 
+        //create back_button arrow but set it invisible and turn around
+        this.back_button = this.add.sprite(150, 100, 'next_button').setInteractive();
+        this.back_button.setVisible(true);
+        //scale items in canvas
+        this.back_button.setScale(0.3);
+
+
         //launch the first scene
         this.scene.launch('SceneA');
         //set current scene
         this.currentScene = this.scene.get('SceneA');
+
+        
     }
 
     
@@ -84,11 +93,11 @@ class Controller extends Phaser.Scene{
         }.bind(this));
 
         //invoke when next button is visible
-        this.handler_next_button(dragItem, dropItem, dropFake);
+        this.handler_button(dragItem, dropItem, dropFake);
     }
 
 
-    handler_next_button(dragItem, dropItem, dropFake){
+    handler_button(dragItem, dropItem, dropFake){
         //invoke when finish the valid pos
         this.next_button.once('pointerup', function (pointer) {
             //check for process game in UIScene
@@ -127,6 +136,11 @@ class Controller extends Phaser.Scene{
             this.visible_item(this.next_button,false);
             
         }.bind(this)); 
+
+        //invoke when player click back button
+        this.back_button.once('pointerup', function (pointer) {
+            window.location='index.html';
+        });
     }
 
 
