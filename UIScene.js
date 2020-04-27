@@ -2,12 +2,12 @@ class UIScene extends Phaser.Scene{
     constructor(){
         super({ key: 'UIScene', active: true });
 
-        this.number_of_questions = 5;
+        this.number_of_questions = 7;
         this.score = this.number_of_questions;
         this.check_flag = false;
 
         this.posX = 400;
-        this.posY = 100;
+        this.posY = 70;
 
         this.distance = 40;
     }
@@ -20,6 +20,13 @@ class UIScene extends Phaser.Scene{
 
     create()
     {
+
+        this.line = new Phaser.Geom.Line(0, 150, this.cameras.main.width, 150);
+
+        this.graphics = this.add.graphics();
+        this.graphics.lineStyle(10, 0xAAAAA);
+        this.graphics.strokeLineShape(this.line);
+
         this.registry.set('score', this.score);
         this.registry.set('check_flag', this.check_flag);
 
@@ -49,6 +56,8 @@ class UIScene extends Phaser.Scene{
 
                 //animation to move the process ball to the right
                 Controller.animation(ref.process_ball[ref.score], ref.process_ball[ref.score].x + 400, ref.posY);
+
+                console.log("set ball go");
             }
             else
                 this.check_flag = false;
@@ -60,7 +69,7 @@ class UIScene extends Phaser.Scene{
         //event happens when the ball in is wrong dropzone
         Controller.events.on('addScore', function () {
             //check_flag ensure to update one time even when player keep choosing wrong
-            if(this.score < 4 && this.check_flag == false){
+            if(this.score < this.number_of_questions && this.check_flag == false){
 
                 //if the score is below zero, change to winning scene
                 // info.setText('Score: ' + ref.score); //for debugging
@@ -71,6 +80,8 @@ class UIScene extends Phaser.Scene{
                 ref.score++;
 
                 this.check_flag = true;
+
+                console.log("return ball");
             }
             else
                 console.log("nothing happens"); //for debugging
@@ -86,5 +97,7 @@ class UIScene extends Phaser.Scene{
             this.process_ball[i].destroy(true);
             this.process_ball[i] = null;
         }
+        this.graphics.destroy(true);
+        this.line = null;
     }
 }
