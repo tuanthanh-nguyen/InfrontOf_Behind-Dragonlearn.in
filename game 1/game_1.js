@@ -18,8 +18,8 @@ function dragenter(e){
     e.preventDefault();
 }
 
-function dragleave(e){
-    
+function dragleave(e){  
+
 }
 
 function startDrag(e){
