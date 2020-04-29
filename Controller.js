@@ -1,48 +1,128 @@
 class Controller extends Phaser.Scene{
     constructor(){
         super("Controller");
+
+        this.dropX = 250;
+        this.dropY = 500;
+        this.dragX = 1200;
+        this.dragY = 700;
     }
     preload(){
-        this.load.image('next_button','image/back_icon.png');
-        this.load.image('drag', 'image/35.png');
-        this.load.image('drop', 'image/53.png');
-        this.load.image('drop1', 'image/47.png');
-        this.load.image('end', 'image/icon_logo.jpg');
-        this.load.image('bag', 'image/41.png');
-        
-        this.load.image('sound', 'image/loa.png');
-        this.load.audio('infront','infront.mp3');
-        this.load.audio('behind','behind.mp3');
+        this.load.svg('next_button','image/38.svg',{width:"200", height:"200"});
+        this.load.svg('ball', 'image/35.svg',{width:"150", height:"150"});
+        this.load.svg('book', 'image/39.svg',{width:"300", height:"300"});
+        this.load.svg('drop', 'image/53.svg',{width:"500", height:"500"});
+        this.load.svg('drop1', 'image/55.svg',{width:"500", height:"500"});
+        this.load.svg('bag', 'image/41.svg',{width:"500", height:"500"});
+        this.load.svg('cactus', 'image/45.svg',{width:"400", height:"400"});
+        this.load.svg('sound', 'image/loa.svg',{width:"100", height:"100"});
     }
 
 
     create(){
-        this.cameras.main.backgroundColor.setTo(255,255,255);
+        this.cameras.main.setBackgroundColor('#f5fffd');
 
-        //create next_button arrow but set it invisible and turn around
-        this.next_button = this.add.sprite(1200, 900, 'next_button').setInteractive();
-        this.next_button.setVisible(false);
-        this.next_button.angle = 180;
-        //scale items in canvas
-        this.next_button.setScale(0.3);
-
-        //create back_button arrow but set it invisible and turn around
-        this.back_button = this.add.sprite(150, 70, 'next_button').setInteractive();
-        this.back_button.setVisible(true);
-        //scale items in canvas
-        this.back_button.setScale(0.3);
-
-
-        //launch the first scene
-        this.scene.launch('SceneA');
-        //set current scene
-        this.currentScene = this.scene.get('SceneA');
+        this.create_button();
+        
+        this.create_game();
+    }
 
         
+    create_game(){
+        var ref = this;
+
+        //setting up dropping zone
+        this.drop = [];
+        this.drop[0] = this.item_factory(this.dropX, this.dropY, "drop");   //infront is case 0
+        this.drop[1] = this.item_factory(this.dropX, this.dropY, "drop1");  //behind is case 1
+
+        
+        var obstacle = [];
+        obstacle[0] = {
+            item: 'bag',
+            offsetX: 0,
+            offsetY: -180
+        };
+        obstacle[1] = {
+            item: 'cactus',
+            offsetX: 50,
+            offsetY: -100
+        };
+        var randIndex2 = this.get_random_int(0,1);
+        //setting up initial possition
+        this.obstacle_item = this.item_factory(this.dropX + obstacle[randIndex2].offsetX, 
+            this.dropY + obstacle[randIndex2].offsetY, obstacle[randIndex2].item);
+
+
+        this.drag = [];
+        this.drag[0] = {
+            item: 'ball',
+            offSet: [
+                {
+                    X: 0,
+                    Y: -100
+                },
+                {   
+                    X:-200,
+                    Y: -200
+                }
+            ]
+        };
+        this.drag[1] = {
+            item: 'book',
+            offSet:[
+                {
+                    X: -50,
+                    Y: -120
+                },
+                {
+                    X: -200,
+                    Y: -240
+                }
+            ]
+        };
+
+        this.dragType = this.get_random_int(0,1);  //track drag object type
+        //setting up initial possition
+        this.drag_item = this.item_factory(this.dragX, this.dragY, this.drag[ref.dragType].item);
+
+        
+
+        this.set_draggable( this.drag_item);
+        this.set_droppable( this.drop[0]);
+        this.set_droppable( this.drop[1]);
+
+        //in front or behind case
+        this.caseType = this.get_random_int(0,1);
+        if(ref.caseType == 0)
+            this.drag_and_drop(this.drag_item, this.drop[0], this.drop[1]);
+        else 
+            this.drag_and_drop(this.drag_item, this.drop[1], this.drop[0]);
+
+
+        var s;
+        if(ref.caseType == 0) s = 'in front of';
+        else s = 'behind of'
+
+        var sentence = 'Put the ' + this.drag[ref.dragType].item + ' ' + s + ' the ' + obstacle[randIndex2].item;
+        //setting up text
+        this.sentence = this.add.text(700, 200, sentence, 
+            {
+                fontSize: '40px',
+                fontFamily: 'Arial',
+                color: '#AAAAAAA',
+                align: 'center',
+                lineSpacing: 44,
+            }
+        ).setInteractive({ useHandCursor: true });
+        this.sound = this.item_factory( 550, 170, 'sound');
+        //setting up sound
+        this.say(ref.sound,sentence);
+        this.say(ref.sentence,sentence);
     }
 
     
-    setDraggable  (dragItem)  {
+    set_draggable  (dragItem)  {
         //set physics of the ball
         dragItem.setCollideWorldBounds(true);
 
@@ -51,106 +131,163 @@ class Controller extends Phaser.Scene{
     }
 
 
-    setDroppable  (dropItem)  {
-        
+    set_droppable  (dropItem)  {
+        //set drop item
         if(dropItem != null) 
             dropItem.input.dropZone = true;
-
     }
 
 
     drag_and_drop  (dragItem, dropItem, dropFake)  {
-        console.log(this.currentScene); //for debugging
-
+        
         //invoke when dragging
         this.input.on('drag', function (pointer, gameObject, dragX, dragY) {
             gameObject.x = dragX;
             gameObject.y = dragY;
         });
 
-        //invoke when drop, if in the drop zone then execute
-        this.input.on('drop', function (pointer, gameObject, dropZone) {
+        this.input.on('dragenter', function (pointer, gameObject, dropZone) {
 
-            if(dropZone == dropFake){
-                console.log("wrong");
-                var ref = this;
-                this.events.emit('addScore');
-                this.animation(dragItem,ref.currentScene.drag_X,ref.currentScene.drag_Y);
-            }
-            if(dropZone == dropItem ){
-                console.log(dropZone == dropItem);
-                gameObject.input.enabled = false;
-                this.animation(dragItem,dropZone.x + dropZone.input.hitArea.width/2,dropZone.y + dropZone.input.hitArea.height/2);
-                //visiblize next button
-                this.visible_item(this.next_button,true);
-            }
-        }.bind(this));
+            dropZone.setTint(0xffff000);
     
-        //invoke the moment drop event occur, if not in the drop zone then execute
+        });
+    
+        this.input.on('dragleave', function (pointer, gameObject, dropZone) {
+    
+            dropZone.clearTint();
+    
+        });
+
         this.input.on('dragend', function (pointer, gameObject, dropped) {
             // console.log(this);
             var ref = this;
-            if (!dropped) this.animation(dragItem,ref.currentScene.drag_X,ref.currentScene.drag_Y);
+            if (!dropped) this.animation(dragItem,ref.dragX,ref.dragY);
         }.bind(this));
 
-        //invoke when next button is visible
-        this.handler_button(dragItem, dropItem, dropFake);
+
+        this.input.on('drop', function (pointer, gameObject, dropZone) {
+            var ref = this;
+            if(dropZone == dropFake){
+                
+                this.events.emit('addScore');
+
+                dropZone.setTint(0xFF0000);
+
+                this.animation(dragItem,ref.dragX,ref.dragY);
+            }
+            if(dropZone == dropItem ){
+                gameObject.input.enabled = false;
+                
+                ref.animation_true_pos();
+
+                dropZone.setTint(0x00ff00);
+                
+                setTimeout(function(){ref.trigger_next_scene()},3000);
+            }   
+            setTimeout(function(){dropZone.clearTint();},3000);
+        }.bind(this));
+
+        this.handle_button();
+    }
+    create_button(){
+        var ref = this;
+        //next button
+        this.graphics1 = this.add.graphics()
+        this.graphics1.fillStyle(0x0066CC, 0.75);
+
+        this.nextButton = {
+            rect: ref.graphics1.fillRoundedRect(1200, 400, 200, 50),
+            text: this.add.text(1230, 398, 'Next >', 
+                    {
+                        fontSize: '50px',
+                        fontFamily: 'Arial',
+                        color: '#FFFFFF',
+                        align: 'center',
+                        lineSpacing: 44,
+                    }
+                ).setInteractive({ useHandCursor: true }),
+            hide(){this.rect.setVisible(false),this.text.setVisible(false)},
+            show(){this.rect.setVisible(true),this.text.setVisible(true)}
+        };
+        //hide the next button
+        this.nextButton.hide();
+
+
+        //back button
+        this.graphics2 = this.add.graphics()
+        this.graphics2.fillStyle(0x0066CC, 0.75);
+
+        this.backButton = {
+            rect: ref.graphics2.fillRoundedRect(100, 50 , 200 , 50),
+            text: this.add.text(110, 48, '< Back', 
+                {
+                    fontSize: '50px',
+                    fontFamily: 'Arial',
+                    color: '#FFFFFF',
+                    align: 'center',
+                    lineSpacing: 44,
+                }
+            ).setInteractive({ useHandCursor: true })
+        };
+    }
+    handle_button(){
+        this.handle_back_button();
+        this.handle_next_button();
     }
 
-
-    handler_button(dragItem, dropItem, dropFake){
-        //invoke when finish the valid pos
-        this.next_button.once('pointerup', function (pointer) {
-            //check for process game in UIScene
-            this.events.emit('minusScore');
-
-            //reset the item drag and drop
-            var ref = this;
-
-            //change to next scene
+    handle_back_button(){
+        var ref = this;
+        this.backButton.text.once('pointerup',function(){
+            window.location='index.html';
+        })
+    }
+    handle_next_button(){
+        var ref = this;
+        this.nextButton.text.once('pointerup',function(){
+            ref.events.emit('minusScore');
             setTimeout(function(){
                 var tmp = ref.registry.get('score');
-                console.log(tmp);
                 
                 //if finish score then next scene will be end-scene
                 if(tmp <= 0){
-                    //clear the current scene item
-                    ref.currentScene.clear_item();
+                    //destroy UI scene
+                    ref.UI = ref.scene.get('UIScene');
+                    ref.UI.destroy();
 
-                    //destroy UI process-ball
-                    ref.currentScene = ref.scene.get("UIScene");
-                    ref.currentScene.destroy();
-
-                    //destroy next button
-                    ref.destroy(ref.next_button);
-
-                    //change to ending scene
-                    ref.scene.launch('End');
-                    ref.currentScene = ref.scene.get('End');
-                    console.log(ref.currentScene);
+                    //clear current game
+                    ref.clear_current_game();
+                    window.location='index.html';
                 }
-                //change to next scene of a scene (sceneA -> sceneB, sceneB -> sceneC)
-                else ref.currentScene = ref.currentScene.invoke_next_scene(ref.currentScene); 
-            },3000);
+                //change to next scene 
+                else {
+                    ref.nextButton.hide();
 
-            //hide the next button
-            this.visible_item(this.next_button,false);
-            
-        }.bind(this)); 
+                    ref.clear_current_game();
+    
+                    ref.create_game();
+                }
+            },3000)
+        })
+    }
+    trigger_next_scene(){
+        var ref = this;
 
-        //invoke when player click back button
-        this.back_button.once('pointerup', function (pointer) {
-            window.location='index.html';
-        });
+        this.nextButton.show();    
     }
 
+    clear_current_game(){
 
-    play_audio(item,audio){
-        item.on('pointerdown', function (pointer) {
-            audio.play();   
-        });
+        console.log('clear scene');
+        
+        this.destroy(this.drop[0]);
+        this.destroy(this.drop[1]);
+        this.destroy(this.drag_item);
+        this.destroy(this.obstacle_item);
+
+        this.destroy(this.sound);
+        this.destroy(this.sentence);
+        
     }
-
 
     animation(item,pos_x,pos_y){
         var timeline = this.tweens.createTimeline();
@@ -164,19 +301,38 @@ class Controller extends Phaser.Scene{
                 timeline.play();
     }
 
+    animation_true_pos(){
+        var ref = this;
 
-    visible_item(item,flag){
-        //set visible next_button button
-        setTimeout(function(){item.setVisible(flag);},2000);
-    }  
+        var offSetX = ref.drop[ref.caseType].x + ref.drop[ref.caseType].width/2 
+        var offSetY = ref.drop[ref.caseType].y + ref.drop[ref.caseType].width/2 
 
-
-    item_factory(posX, posY, item){
-        return this.physics.add.sprite(posX ,posY, item).setInteractive();
+        this.animation(ref.drag_item, offSetX + ref.drag[ref.dragType].offSet[ref.caseType].X, 
+            offSetY + ref.drag[ref.dragType].offSet[ref.caseType].Y)
+    
+        //if the dropzone is behind then set obstacle to front
+        if(ref.caseType == 1)
+            this.obstacle_item.setDepth(1);
     }
 
-    audio_factory(item){
-        return this.sound.add(item);
+    item_factory(posX, posY, item){
+        return this.physics.add.sprite(posX ,posY, item).setInteractive({ pixelPerfect: true}).setOrigin(0,0);
+    }
+
+    say(item,m) {
+        var ref = this;
+        item.on('pointerdown', function (pointer) {
+            var msg = new SpeechSynthesisUtterance();
+            var voices = window.speechSynthesis.getVoices();
+            msg.voice = voices[ref.get_random_int(0,10)];
+            msg.voiceURI = "native";
+            msg.volume = 1;
+            msg.rate = 1;
+            msg.pitch = 0.8;
+            msg.text = m;
+            msg.lang = 'en-US';
+            speechSynthesis.speak(msg); 
+        });
     }
 
 
@@ -187,13 +343,10 @@ class Controller extends Phaser.Scene{
         }
     }
 
-
-    clear_scene(dragItem,dropItem,dropFake){
-
-        this.destroy(dragItem);
-
-        this.destroy(dropItem);
-
-        this.destroy(dropFake);
+    get_random_int(min, max) {
+        min = Math.ceil(min);
+        max = Math.floor(max);
+        return Math.floor(Math.random() * (max - min + 1)) + min;
     }
+
 }
