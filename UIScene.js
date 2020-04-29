@@ -6,26 +6,32 @@ class UIScene extends Phaser.Scene{
         this.score = this.number_of_questions;
         this.check_flag = false;
 
-        this.posX = 400;
+        this.posX = 660;
         this.posY = 70;
 
         this.distance = 40;
+        
     }
 
 
     preload(){
-        this.load.image('process_ball','image/1.png');
+        this.load.svg('process_ball','image/1.svg',{width:"15",height:"15"});
     }
 
 
     create()
     {
-
-        this.line = new Phaser.Geom.Line(0, 150, this.cameras.main.width, 150);
-
         this.graphics = this.add.graphics();
-        this.graphics.lineStyle(10, 0xAAAAA);
-        this.graphics.strokeLineShape(this.line);
+        //Line separate the process ball with the game
+        this.Line = new Phaser.Geom.Line(0, 150, this.cameras.main.width, 150);
+
+        this.graphics.lineStyle(2, 0xCEEEEEE);
+        this.graphics.strokeLineShape(this.Line);
+
+
+        //process ball frame
+        this.graphics.fillStyle(0xA59E9D, 0.3);
+        this.graphics.fillRoundedRect(this.posX-20, 50, 680, 40);
 
         this.registry.set('score', this.score);
         this.registry.set('check_flag', this.check_flag);
@@ -36,8 +42,6 @@ class UIScene extends Phaser.Scene{
             this.process_ball[i] = this.add.sprite(this.posX + i*this.distance, this.posY, 'process_ball');
             this.process_ball[i].setScale(2);
         }
-        //  Our Text object to display the Score for debugging
-        // var info = this.add.text(10, 10, 'Score: 4');
 
         //  Grab a reference to the Controller Scene
         var Controller = this.scene.get('Controller');
@@ -45,14 +49,13 @@ class UIScene extends Phaser.Scene{
         //  Listen for events from it
         var ref = this;
 
+        
+
         //event happens when the ball is in right dropzone
         Controller.events.on('minusScore', function () {
             //check_flag is true when no wrong answer before happens in a scene
             if( this.score > 0 && this.check_flag == false){
                 ref.score--;
-                
-                //if the score is below zero, change to winning scene
-                // info.setText('Score: ' + ref.score); //for debugging
 
                 //animation to move the process ball to the right
                 Controller.animation(ref.process_ball[ref.score], ref.process_ball[ref.score].x + 400, ref.posY);
@@ -72,7 +75,6 @@ class UIScene extends Phaser.Scene{
             if(this.score < this.number_of_questions && this.check_flag == false){
 
                 //if the score is below zero, change to winning scene
-                // info.setText('Score: ' + ref.score); //for debugging
 
                 //animation to move the process ball to the right
                 Controller.animation(ref.process_ball[ref.score], ref.process_ball[ref.score].x - 400, ref.posY);
@@ -92,7 +94,10 @@ class UIScene extends Phaser.Scene{
 
         }, this);
     }
+
+
     destroy(){
+        console.log('destroy UI');
         for(let i = 0; i < this.number_of_questions; i++){
             this.process_ball[i].destroy(true);
             this.process_ball[i] = null;
