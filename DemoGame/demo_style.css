@@ -1,0 +1,29 @@
+*{
+    margin: 0;
+    height: 100vh;
+    background: linear-gradient(#cac2c2, rgb(175, 226, 223)); 
+    font-family: sans-serif;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+}
+.imgbox {
+    display: grid;
+    height: 100%;
+}
+.center-fit {
+    max-width: 100%;
+    max-height: 100vh;
+    margin: auto;
+}
+canvas{
+    display: grid;
+    /* width: 60%; */
+    max-height: 75%;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    box-shadow: 0 10px 20px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    border-radius : 30px;
+}

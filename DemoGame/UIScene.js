@@ -6,7 +6,7 @@ class UIScene extends Phaser.Scene{
         this.score = this.number_of_questions;
         this.check_flag = false;
 
-        this.posX = 660;
+        this.posX = 630;
         this.posY = 70;
 
         this.distance = 40;
@@ -15,7 +15,7 @@ class UIScene extends Phaser.Scene{
 
 
     preload(){
-        this.load.svg('process_ball','image/1.svg',{width:"15",height:"15"});
+        this.load.svg('process_ball','../image/1.svg',{width:"15",height:"15"});
     }
 
 
@@ -25,7 +25,7 @@ class UIScene extends Phaser.Scene{
         //Line separate the process ball with the game
         this.Line = new Phaser.Geom.Line(0, 150, this.cameras.main.width, 150);
 
-        this.graphics.lineStyle(2, 0xCEEEEEE);
+        this.graphics.lineStyle(10, 0xCEEEEEE);
         this.graphics.strokeLineShape(this.Line);
 
 
@@ -58,7 +58,7 @@ class UIScene extends Phaser.Scene{
                 ref.score--;
 
                 //animation to move the process ball to the right
-                Controller.animation(ref.process_ball[ref.score], ref.process_ball[ref.score].x + 400, ref.posY);
+                Controller.animation(ref.process_ball[ref.score], ref.process_ball[ref.score].x + 400, ref.posY, 1000);
 
                 console.log("set ball go");
             }
@@ -77,7 +77,7 @@ class UIScene extends Phaser.Scene{
                 //if the score is below zero, change to winning scene
 
                 //animation to move the process ball to the right
-                Controller.animation(ref.process_ball[ref.score], ref.process_ball[ref.score].x - 400, ref.posY);
+                Controller.animation(ref.process_ball[ref.score], ref.process_ball[ref.score].x - 400, ref.posY, 1000);
             
                 ref.score++;
 
