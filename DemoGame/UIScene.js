@@ -19,90 +19,151 @@ class UIScene extends Phaser.Scene{
     }
 
 
-    create()
-    {
-        this.graphics = this.add.graphics();
-        //Line separate the process ball with the game
-        this.Line = new Phaser.Geom.Line(0, 150, this.cameras.main.width, 150);
+    create(){
+        this.create_button();
+        this.create_process_ball();
 
-        this.graphics.lineStyle(10, 0xCEEEEEE);
-        this.graphics.strokeLineShape(this.Line);
+        var handler = this.scene.get('Handler');
+        handler.handle_back_button();
+    }
 
-
-        //process ball frame
-        this.graphics.fillStyle(0xA59E9D, 0.3);
-        this.graphics.fillRoundedRect(this.posX-20, 50, 680, 40);
-
-        this.registry.set('score', this.score);
-        this.registry.set('check_flag', this.check_flag);
-
-        this.process_ball = [];
-        for (let i = 0; i < this.number_of_questions; i++)
-        {
-            this.process_ball[i] = this.add.sprite(this.posX + i*this.distance, this.posY, 'process_ball');
-            this.process_ball[i].setScale(2);
-        }
-
-        //  Grab a reference to the Controller Scene
-        var Controller = this.scene.get('Controller');
-
-        //  Listen for events from it
-        var ref = this;
-
-        
+    minus_score(){
+        var controller = this.scene.get('controller');
+        var anmt = this.scene.get('Animation');
+        var uiscene = this;
 
         //event happens when the ball is in right dropzone
-        Controller.events.on('minusScore', function () {
-            //check_flag is true when no wrong answer before happens in a scene
-            if( this.score > 0 && this.check_flag == false){
-                ref.score--;
+        //check_flag is true when no wrong answer before happens in a scene
+        if( this.score > 0 && this.check_flag == false){
+            uiscene.score--;
 
-                //animation to move the process ball to the right
-                Controller.animation(ref.process_ball[ref.score], ref.process_ball[ref.score].x + 400, ref.posY, 1000);
+            //animation to move the process ball to the right
+            anmt.animation_move(uiscene.process_ball[uiscene.score], uiscene.process_ball[uiscene.score].x + 400, uiscene.posY, 1000);
 
-                console.log("set ball go");
-            }
-            else
-                this.check_flag = false;
+            console.log("set ball go");
+        }
+        else
+            this.check_flag = false;
 
-            this.registry.set('score', this.score);
+        this.registry.set('score', this.score);
+    }
 
-        }, this);
+    add_score(){
+        var controller = this.scene.get('controller');
+        var anmt = this.scene.get('Animation');
+        var uiscene = this;
 
         //event happens when the ball in is wrong dropzone
-        Controller.events.on('addScore', function () {
-            //check_flag ensure to update one time even when player keep choosing wrong
-            if(this.score < this.number_of_questions && this.check_flag == false){
-
-                //if the score is below zero, change to winning scene
-
-                //animation to move the process ball to the right
-                Controller.animation(ref.process_ball[ref.score], ref.process_ball[ref.score].x - 400, ref.posY, 1000);
-            
-                ref.score++;
-
-                this.check_flag = true;
-
-                console.log("return ball");
-            }
-            else
-                console.log("nothing happens"); //for debugging
+        //check_flag ensure to update one time even when player keep choosing wrong
+        if(this.score < this.number_of_questions && this.check_flag == false){
+            //animation to move the process ball to the right
+            anmt.animation_move(uiscene.process_ball[uiscene.score], uiscene.process_ball[uiscene.score].x - 400, uiscene.posY, 1000);
+        
+            uiscene.score++;
 
             this.check_flag = true;
 
-            this.registry.set('score', this.score);
+            console.log("return ball");
+        }
+        else
+            console.log("nothing happens"); //for debugging
 
-        }, this);
+        this.check_flag = true;
+
+        this.registry.set('score', this.score);
+    }
+
+    create_process_ball(){
+        var uiscene = this;
+
+        uiscene.graphics = uiscene.add.graphics();
+        //Line separate the process ball with the game
+        uiscene.Line = new Phaser.Geom.Line(0, 150, uiscene.cameras.main.width, 150);
+
+        uiscene.graphics.lineStyle(10, 0xCEEEEEE);
+        uiscene.graphics.strokeLineShape(uiscene.Line);
+
+
+        //process ball frame
+        uiscene.graphics.fillStyle(0xA59E9D, 0.3);
+        uiscene.graphics.fillRoundedRect(uiscene.posX-20, 50, 680, 40);
+
+        uiscene.registry.set('score', uiscene.score);
+        uiscene.registry.set('check_flag', uiscene.check_flag);
+
+        uiscene.process_ball = [];
+        for (let i = 0; i < uiscene.number_of_questions; i++)
+        {
+            uiscene.process_ball[i] = uiscene.add.sprite(uiscene.posX + i*uiscene.distance, uiscene.posY, 'process_ball');
+            uiscene.process_ball[i].setScale(2);
+        }
     }
 
 
-    destroy(){
+    create_button(){
+        var uiscene = this;
+        var controller = this.scene.get('Controller');
+        var anmt = this.scene.get('Animation');
+
+        //next button
+        controller.graphics1 = controller.add.graphics();
+        controller.graphics1.fillStyle(0x0066CC, 0.75);
+
+        controller.nextButton = {
+            rect: controller.graphics1.fillRoundedRect(controller.dragX, controller.dragY, 200, 50).setAlpha(0),
+            text: controller.add.text(controller.dragX + 30, controller.dragY - 3, 'Next >', 
+                    {
+                        fontSize: '50px',
+                        fontFamily: 'Arial',
+                        color: '#FFFFFF',
+                        align: 'center',
+                        lineSpacing: 44,
+                    }
+                ).setInteractive({ useHandCursor: true }).setAlpha(0),
+            disappear(){
+                anmt.animation_fade_item(controller.nextButton.rect, 'fade out', 1000);
+                anmt.animation_fade_item(controller.nextButton.text, 'fade out', 1000);
+            },
+            show(){
+                anmt.animation_fade_item(controller.nextButton.rect, null, 1000);
+                anmt.animation_fade_item(controller.nextButton.text, null, 1000);
+            }
+        };
+
+        //back button
+        controller.graphics2 = controller.add.graphics();
+        controller.graphics2.fillStyle(0x0066CC, 0.75);
+
+        controller.backButton = {
+            rect: controller.graphics2.fillRoundedRect(100, 50 , 200 , 50),
+            text: controller.add.text(110, 48, '< Back', 
+                {
+                    fontSize: '50px',
+                    fontFamily: 'Arial',
+                    color: '#FFFFFF',
+                    align: 'center',
+                    lineSpacing: 44,
+                }
+            ).setInteractive({ useHandCursor: true })
+        };
+    }
+
+
+    clear(){
+        var controller = this.scene.get("Controller");
+        var uiscene = this;
+
         console.log('destroy UI');
         for(let i = 0; i < this.number_of_questions; i++){
-            this.process_ball[i].destroy(true);
-            this.process_ball[i] = null;
+            controller.destroy(uiscene.process_ball[i]);
         }
-        this.graphics.destroy(true);
-        this.line = null;
+        controller.destroy(uiscene.graphics);
+        controller.destroy(uiscene.line);
+
+        controller.destroy(controller.nextButton.text);
+        controller.destroy(controller.graphics1);
+
+        controller.destroy(controller.backButton.text);
+        controller.destroy(controller.graphics2);
     }
 }
