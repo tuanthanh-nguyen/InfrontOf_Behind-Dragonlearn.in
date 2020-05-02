@@ -1,6 +1,10 @@
 var config={
-    width: "100",
-    height: "100",
+    type: Phaser.AUTO,
+    backgroundColor: "#edf7f5",
+    scale :{
+        width: 1920,
+        height: 1080,
+    }, 
     physics: {
         default: "arcade",
         arcade: {

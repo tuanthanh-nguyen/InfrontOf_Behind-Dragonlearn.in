@@ -24,7 +24,7 @@ class Controller extends Phaser.Scene{
 
 
     create(){
-        this.cameras.main.setBackgroundColor('#edf7f5');
+        // this.cameras.main.setBackgroundColor('#edf7f5');
 
         this.scene_opening();
     }
