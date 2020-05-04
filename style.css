@@ -215,3 +215,47 @@ nav {
     width: 180px;
     height: 180px;
 }
+
+.t-card-completed {
+    padding: 30px;
+    width: 90%;
+    text-align: center;
+}
+
+.t-card-completed--title {
+    font-size: 32px;
+    line-height: 32px;
+    font-family: 'Poppins', sans-serif;
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.t-card-completed--congrats {
+    height: 200px;
+    margin-bottom: 20px;
+    background-repeat: no-repeat;
+    background-position: top center;
+    background-image: url(image/dragon.png);
+}
+
+.t-card-completed--button {
+    text-align: center;
+}
+
+.t-card-completed--button a:hover {
+    background-color: #50bae2;
+}
+
+.t-card-completed--button a {
+    font-size: 29px;
+    text-decoration: none;
+    background: #66c3e6;
+    color: white;
+    display: inline-block;
+    padding: 12px 20px 8px;
+    border-radius: 7px;
+    -webkit-transition: background-color 0.2s easy-in;
+    -moz-transition: background-color 0.2s easy-in;
+    transition: background-color 0.2s easy-in;
+}
+
