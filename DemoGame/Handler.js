@@ -100,7 +100,7 @@ class Handler extends Phaser.Scene{
                     //destroy UI scene
                     uiscene.clear();
                     
-                    window.location='../index.html';
+                    window.location='../win_screen.html';
                 }
                 //change to next scene 
                 else {
