@@ -5,10 +5,10 @@ class Speaker extends Phaser.Scene{
 
 
     say(item,m) {
-        var ref = this.scene.get('Controller');
+        const ref = this.scene.get('Controller');
         
         item.on('pointerdown', function (pointer) {
-            var msg = new SpeechSynthesisUtterance();
+            const msg = new SpeechSynthesisUtterance();
             var voices = window.speechSynthesis.getVoices();
             msg.voice = voices[ref.get_random_int(0,10)];
             msg.voiceURI = "native";

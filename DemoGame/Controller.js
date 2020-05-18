@@ -31,9 +31,8 @@ class Controller extends Phaser.Scene{
 
 
     scene_opening(){
-        var scenemng = this.scene.get("SceneManager");
-        var controller = this.scene.get("Controller");
-        var uiscene = this.scene.get("UIScene");
+        const scenemng = this.scene.get("SceneManager");
+        const controller = this.scene.get("Controller");
 
         controller.start_button = controller.physics.add.sprite(controller.cameras.main.centerX, 
             controller.cameras.main.centerY, 'play').setInteractive({ pixelPerfect: true}).setOrigin(0.5);

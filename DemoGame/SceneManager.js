@@ -4,7 +4,7 @@ class SceneManager extends Phaser.Scene{
     }
 
     set_draggable  (dragItem)  {
-        var controller = this.scene.get("Controller")
+        const controller = this.scene.get("Controller")
         //set physics of the ball
         dragItem.setCollideWorldBounds(true);
 
@@ -21,11 +21,11 @@ class SceneManager extends Phaser.Scene{
 
 
     create_game(){
-        var scenemng = this;
-        var controller = this.scene.get('Controller');
-        var handler = this.scene.get('Handler');
-        var speaker = this.scene.get('Speaker');
-        var anmt = this.scene.get('Animation');
+        const scenemng = this;
+        const controller = this.scene.get('Controller');
+        const handler = this.scene.get('Handler');
+        const speaker = this.scene.get('Speaker');
+        const anmt = this.scene.get('Animation');
 
         //setting up dropping zone
         controller.drop = [];
@@ -90,17 +90,17 @@ class SceneManager extends Phaser.Scene{
 
         //in front or behind case
         controller.caseType = controller.get_random_int(0,1);
-        if(controller.caseType == 0)
+        if(controller.caseType === 0)
             handler.drag_and_drop(controller.drag_item, controller.drop[0], controller.drop[1], controller.dragX, controller.dragY, controller.drop[1]);
         else 
             handler.drag_and_drop(controller.drag_item, controller.drop[1], controller.drop[0], controller.dragX, controller.dragY, controller.drop[1]);
 
 
-        var tmp;
-        if(controller.caseType == 0) tmp = 'in front of';
+        let tmp;
+        if(controller.caseType === 0) tmp = 'in front of';
         else tmp = 'behind of'
 
-        var sentence = 'Put the ' + controller.drag[controller.dragType].item + ' ' + tmp + ' the ' + obstacle[randIndex2].item;
+        const sentence = 'Put the ' + controller.drag[controller.dragType].item + ' ' + tmp + ' the ' + obstacle[randIndex2].item;
         //setting up text
         controller.sentence = controller.add.text(700, 200, sentence, 
             {
@@ -111,7 +111,7 @@ class SceneManager extends Phaser.Scene{
                 lineSpacing: 44,
             }
         ).setInteractive({ useHandCursor: true });
-        controller.sound = scenemng.item_factory( 550, 170, 'sound');
+        controller.sound = scenemng.item_factory(/*posX =*/ 550, /*posX =*/ 170, /*item =*/'sound');
         //setting up sound
         speaker.say(controller.sound,sentence);
         speaker.say(controller.sentence,sentence);
@@ -119,7 +119,7 @@ class SceneManager extends Phaser.Scene{
         anmt.animation_fade_screen('fade in', 1000);
     }
     clear_current_game(){
-        var controller = this.scene.get("Controller");
+        const controller = this.scene.get("Controller");
 
         controller.destroy(controller.drop[0]);
         controller.destroy(controller.drop[1]);
@@ -131,7 +131,7 @@ class SceneManager extends Phaser.Scene{
 
 
     item_factory(posX, posY, item){
-        var controller = this.scene.get("Controller");
+        const controller = this.scene.get("Controller");
 
         return controller.physics.add.sprite(posX ,posY, item).setInteractive({ pixelPerfect: true}).setOrigin(0,0);
     }

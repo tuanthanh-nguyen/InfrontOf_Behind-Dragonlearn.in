@@ -25,7 +25,7 @@ class Animation extends Phaser.Scene{
     animation_fade_item(item,flag,duration){
         const controller = this.scene.get('Controller');
 
-        var v1 = 0, v2 = 1;
+        let v1 = 0, v2 = 1;
         if(flag == 'fade out') {
             v1 = 1;
             v2 = 0;
@@ -82,9 +82,9 @@ class Animation extends Phaser.Scene{
         const controller = this.scene.get('Controller');
         const scenemng = this.scene.get('SceneManager');
 
-        controller.arrow = scenemng.item_factory(1050, 500, 'arrow');
+        controller.arrow = scenemng.item_factory(/*posX =*/1050, /*posY =*/500, /*item =*/'arrow');
         controller.arrow.angle = 90;
-        this.animation_move(controller.arrow, 1050, 250, 3000);
+        this.animation_move(controller.arrow, /*posX =*/1050, /*posY =*/250, /*duration =*/3000);
         this.animation_fade_item(controller.arrow, 'fade out', 3000);
 
         setTimeout(function(){controller.destroy(controller.arrow);},4000);
@@ -107,8 +107,8 @@ class Animation extends Phaser.Scene{
     }
 
     animation_fade_screen(flag, duration){
-        var anmt = this;
-        var controller = this.scene.get('Controller');
+        const anmt = this;
+        const controller = this.scene.get('Controller');
 
         anmt.animation_fade_item(controller.drag_item, flag, duration);
         anmt.animation_fade_item(controller.drop[0], flag, duration);

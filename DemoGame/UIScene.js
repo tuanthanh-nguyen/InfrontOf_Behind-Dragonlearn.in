@@ -23,18 +23,17 @@ class UIScene extends Phaser.Scene{
         this.create_button();
         this.create_process_ball();
 
-        var handler = this.scene.get('Handler');
+        const handler = this.scene.get('Handler');
         handler.handle_back_button();
     }
 
     minus_score(){
-        var controller = this.scene.get('controller');
-        var anmt = this.scene.get('Animation');
-        var uiscene = this;
+        const anmt = this.scene.get('Animation');
+        const uiscene = this;
 
         //event happens when the ball is in right dropzone
         //check_flag is true when no wrong answer before happens in a scene
-        if( this.score > 0 && this.check_flag == false){
+        if( this.score > 0 && this.check_flag === false){
             uiscene.score--;
 
             //animation to move the process ball to the right
@@ -49,13 +48,12 @@ class UIScene extends Phaser.Scene{
     }
 
     add_score(){
-        var controller = this.scene.get('controller');
-        var anmt = this.scene.get('Animation');
-        var uiscene = this;
+        const anmt = this.scene.get('Animation');
+        const uiscene = this;
 
         //event happens when the ball in is wrong dropzone
         //check_flag ensure to update one time even when player keep choosing wrong
-        if(this.score < this.number_of_questions && this.check_flag == false){
+        if(this.score < this.number_of_questions && this.check_flag === false){
             //animation to move the process ball to the right
             anmt.animation_move(uiscene.process_ball[uiscene.score], uiscene.process_ball[uiscene.score].x - 400, uiscene.posY, 1000);
         
@@ -74,7 +72,7 @@ class UIScene extends Phaser.Scene{
     }
 
     create_process_ball(){
-        var uiscene = this;
+        const uiscene = this;
 
         uiscene.graphics = uiscene.add.graphics();
         //Line separate the process ball with the game
@@ -101,9 +99,8 @@ class UIScene extends Phaser.Scene{
 
 
     create_button(){
-        var uiscene = this;
-        var controller = this.scene.get('Controller');
-        var anmt = this.scene.get('Animation');
+        const controller = this.scene.get('Controller');
+        const anmt = this.scene.get('Animation');
 
         //next button
         controller.graphics1 = controller.add.graphics();
@@ -150,8 +147,8 @@ class UIScene extends Phaser.Scene{
 
 
     clear(){
-        var controller = this.scene.get("Controller");
-        var uiscene = this;
+        const controller = this.scene.get("Controller");
+        const uiscene = this;
 
         console.log('destroy UI');
         for(let i = 0; i < this.number_of_questions; i++){

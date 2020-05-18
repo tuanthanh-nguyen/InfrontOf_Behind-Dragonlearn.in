@@ -3,12 +3,11 @@ class Handler extends Phaser.Scene{
         super("Handler");
     }
 
-    drag_and_drop  (dragItem, dropItem, dropFake, dragX, dragY, behindDrop)  {
-        var handler = this;
-        var controller = this.scene.get('Controller');
-        var anmt = this.scene.get('Animation');
-        var uiscene = this.scene.get('UIScene');
-        var scenemng = this.scene.get('SceneManager');
+    drag_and_drop  (dragItem, dropItem, dropFake)  {
+        const handler = this;
+        const controller = this.scene.get('Controller');
+        const anmt = this.scene.get('Animation');
+        const uiscene = this.scene.get('UIScene');
         
         //invoke when dragging
         controller.input.on('drag', function (pointer, gameObject, dragX, dragY) {
@@ -23,7 +22,7 @@ class Handler extends Phaser.Scene{
             dropZone.setTint(0xffff000);
 
             //if behind then item appears to be behind
-            if(dropZone == controller.drop[1]) {gameObject.setDepth(-0.5)}
+            if(dropZone === controller.drop[1]) {gameObject.setDepth(-0.5)}
             else { gameObject.setDepth(0.5)}
     
         });
@@ -43,7 +42,7 @@ class Handler extends Phaser.Scene{
         controller.input.on('drop', function (pointer, gameObject, dropZone) {
 
             //happens when drop to wrong dropzone
-            if(dropZone == dropFake){
+            if(dropZone === dropFake){
                 uiscene.add_score();
                 // this.events.emit('addScore');
 
@@ -55,7 +54,7 @@ class Handler extends Phaser.Scene{
                 setTimeout(function(){anmt.animation_tutorial()},2000);
             }
             //happens when drop to right dropzone
-            if(dropZone == dropItem ){
+            if(dropZone === dropItem ){
                 gameObject.input.enabled = false;
                 
                 anmt.animation_true_pos(gameObject);
@@ -73,18 +72,18 @@ class Handler extends Phaser.Scene{
 
 
     handle_back_button(){
-        var controller = this.scene.get('Controller');
+        const controller = this.scene.get('Controller');
 
-        controller.getBackButton().text.once('pointerup',function(){
+        controller.getBackButton().text.once('pointerup',function() {
             window.location = '../index.html';
         })
     }
 
     handle_next_button(){
-        var controller = this.scene.get('Controller');
-        var anmt = this.scene.get('Animation');
-        var uiscene = controller.scene.get('UIScene');
-        var scenemng = controller.scene.get('SceneManager');
+        const controller = this.scene.get('Controller');
+        const anmt = this.scene.get('Animation');
+        const uiscene = controller.scene.get('UIScene');
+        const scenemng = controller.scene.get('SceneManager');
 
         controller.getNextButton().text.once('pointerup',function(){
             uiscene.minus_score();
