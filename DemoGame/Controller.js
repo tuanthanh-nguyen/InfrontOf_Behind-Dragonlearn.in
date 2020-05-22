@@ -20,20 +20,22 @@ class Controller extends Phaser.Scene{
         this.load.svg('sound', '../image/loa.svg',{width:"100", height:"100"});
         this.load.svg('play', '../image/play_button.svg',{width:"400", height:"400"});
         this.load.svg('arrow', '../image/arrow.svg',{width:"100", height:"100"});
+
+        this.load.svg('road', '../image/42.svg',{width: "2000", height: "2000"})
+        this.load.svg('circle_drop', '../image/334.svg',{width: "200", height: "200"})
+        this.load.svg('lions', '../image/354.svg',{width: "300", height: "300"})
+        this.load.svg('wolf', '../image/48.svg',{width: "200", height: "200"})
     }
 
 
     create(){
-        // this.cameras.main.setBackgroundColor('#edf7f5');
-
         this.scene_opening();
     }
 
 
     scene_opening(){
-        var scenemng = this.scene.get("SceneManager");
-        var controller = this.scene.get("Controller");
-        var uiscene = this.scene.get("UIScene");
+        let scenemng = this.scene.get("SceneManager");
+        let controller = this.scene.get("Controller");
 
         controller.start_button = controller.physics.add.sprite(controller.cameras.main.centerX, 
             controller.cameras.main.centerY, 'play').setInteractive({ pixelPerfect: true}).setOrigin(0.5);
@@ -44,17 +46,6 @@ class Controller extends Phaser.Scene{
             controller.destroy(controller.start_button);
         });
     }
-
-
-    getBackButton(){
-        return this.backButton;
-    }
-
-
-    getNextButton(){
-        return this.nextButton;
-    }
-
 
     get_random_int(min, max) {
         min = Math.ceil(min);

@@ -2,51 +2,58 @@ class Animation extends Phaser.Scene{
     constructor(){
         super("Animation");
     }
-    test(){
-        return 1;
+    get_controller(){
+        if(this.controller === undefined) this.controller = this.scene.get('Controller');
+        return this.controller;
+    }
+    get_uiscene(){
+        if(this.uiscene === undefined) this.uiscene = this.scene.get('UIScene');
+        return this.uiscene;
+    }
+    get_scnmng(){
+        if(this.scnmng === undefined) this.scnmng = this.scene.get('SceneManager');
+        return this.scnmng;
+    }
+    get_handler(){
+        if(this.handler === undefined) this.handler = this.scene.get('Handler');
+        return this.handler;
     }
 
-
     animation_move(item, pos_x, pos_y, duration){
-        var controller = this.scene.get('Controller');
+        this.get_controller().tweens.add({
+            targets: item,
+            x: pos_x,
+            y: pos_y,
+            ease: 'Power1',
+            duration: duration,
+        });
 
-        var timeline = controller.tweens.createTimeline();
-                timeline.add({
-                    targets: item,
-                    x: pos_x,
-                    y: pos_y,
-                    ease: 'Power1',
-                    duration: duration,
-                });
-                timeline.play();
     }
 
 
     animation_fade_item(item,flag,duration){
-        var controller = this.scene.get('Controller');
+        // let controller = this.scene.get('controller');
 
-        var v1 = 0, v2 = 1;
+        let v1 = 0, v2 = 1;
         if(flag == 'fade out') {
             v1 = 1;
             v2 = 0;
         }
-        var timeline = controller.tweens.createTimeline();
-                timeline.add({
-                    targets: item,
-                    alpha: { start: v1, to: v2 },
-                    ease: 'Linear',
-                    duration: duration,
-                });
-                timeline.play();
+        this.get_controller().tweens.add({
+            targets: item,
+            alpha: { start: v1, to: v2 },
+            ease: 'Linear',
+            duration: duration,
+        });
+
     }
 
 
-    animation_correct(item, offSet){
-        var controller = this.scene.get('Controller');
-
-        var tween = controller.tweens.add({
+    animation_bounce(item, offSetX, offSetY){
+        this.get_controller().tweens.add({
             targets: item,
-            y: offSet - 50,
+            x: offSetX,
+            y: offSetY,
             ease: 'Power1',
             duration: 500,
             yoyo: true,
@@ -56,65 +63,48 @@ class Animation extends Phaser.Scene{
 
 
     animation_true_pos(item){
-        var anmt = this;
-        var controller = this.scene.get('Controller');
-
-        var offSetX = controller.drop[controller.caseType].x + controller.drop[controller.caseType].width/2 
-        var offSetY = controller.drop[controller.caseType].y + controller.drop[controller.caseType].width/2 
-
-        this.animation_move(item, offSetX + controller.drag[controller.dragType].offSet[controller.caseType].X, 
-            offSetY + controller.drag[controller.dragType].offSet[controller.caseType].Y, 1000)
+        let offSetX = this.get_scnmng().get_drag_item().offSet[this.get_scnmng().get_case_index()].X;
+        let offSetY = this.get_scnmng().get_drag_item().offSet[this.get_scnmng().get_case_index()].Y;
+        this.animation_move(item, offSetX , offSetY , 1000)
     
         //if the dropzone is behind then set obstacle to front
-        if(controller.caseType == 1){
+        if(this.get_scnmng().get_case_index() == 1){
             item.setDepth(0);
-            controller.obstacle_item.setDepth(1);
+            this.get_scnmng().get_obstacle_item().sprite.setDepth(1);
         }
         else{
             item.setDepth(1);
-            controller.obstacle_item.setDepth(0);
+            this.get_scnmng().get_obstacle_item().sprite.setDepth(0);
         }
-        setTimeout(function(){anmt.animation_correct(item, offSetY + controller.drag[controller.dragType].offSet[controller.caseType].Y)},3000);
+        setTimeout(() =>
+            this.animation_bounce(item, offSetX, offSetY -/*preset bouncing vertically*/50)
+        ,3000);
     }
 
     animation_alert(){
-        var anmt = this;
-        var controller = this.scene.get('Controller');
-        var scenemng = this.scene.get('SceneManager');
-
-        controller.arrow = scenemng.item_factory(1050, 500, 'arrow');
-        controller.arrow.angle = 90;
-        anmt.animation_move(controller.arrow, 1050, 250, 3000);
-        anmt.animation_fade_item(controller.arrow, 'fade out', 3000);
-
-        setTimeout(function(){controller.destroy(controller.arrow);},4000);
+        //TODO: alert when player chose wrong position
+        console.log('iam here')
     }
 
 
     animation_tutorial(){
-        var anmt = this;
-        var controller = this.scene.get('Controller');
-        var scenemng = this.scene.get('SceneManager');
-
-        controller.copy = scenemng.item_factory(controller.dragX, controller.dragY, controller.drag[controller.dragType].item).setAlpha(0);
+        this.get_controller().copy = this.get_scnmng().item_factory(/* dragX */1200, /* dragY */700, 
+            /* this.get_controller().drag[this.get_controller().dragType].item */this.get_scnmng().get_drag_item().item)./*make it invisible*/setAlpha(0);
         
-        controller.copy.setAlpha(0.4);
-        anmt.animation_true_pos(controller.copy, 5000);
-        anmt.animation_fade_item(controller.copy, 'fade out', 3000);
+        this.get_controller().copy.setAlpha(/*alpha preset*/0.4);
+        this.animation_true_pos(this.get_controller().copy, /*duration preset*/5000);
+        this.animation_fade_item(this.get_controller().copy, 'fade out', /*duration preset*/3000);
 
-        setTimeout(function(){controller.destroy(controller.copy);},6000);
+        setTimeout( () => this.get_controller().destroy(this.get_controller().copy),/*duration preset*/6000);
         
     }
 
     animation_fade_screen(flag, duration){
-        var anmt = this;
-        var controller = this.scene.get('Controller');
-
-        anmt.animation_fade_item(controller.drag_item, flag, duration);
-        anmt.animation_fade_item(controller.drop[0], flag, duration);
-        anmt.animation_fade_item(controller.drop[1], flag, duration);
-        anmt.animation_fade_item(controller.sound, flag, duration);
-        anmt.animation_fade_item(controller.obstacle_item, flag, duration);
-        anmt.animation_fade_item(controller.sentence, flag, duration);
+        this.animation_fade_item(this.get_scnmng().get_drag_item().sprite, flag, duration);
+        this.animation_fade_item(this.get_controller().drop[0].sprite, flag, duration);
+        this.animation_fade_item(this.get_controller().drop[1].sprite, flag, duration);
+        this.animation_fade_item(this.get_controller().sound, flag, duration);
+        this.animation_fade_item(this.get_scnmng().get_obstacle_item().sprite, flag, duration);
+        this.animation_fade_item(this.get_controller().sentence.text, flag, duration);
     }
 }

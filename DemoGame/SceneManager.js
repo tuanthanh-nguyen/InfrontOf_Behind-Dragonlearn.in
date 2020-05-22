@@ -2,14 +2,32 @@ class SceneManager extends Phaser.Scene{
     constructor(){
         super("SceneManager");
     }
+    get_controller(){
+        if(this.controller === undefined) this.controller = this.scene.get('Controller');
+        return this.controller;
+    }
+    get_uiscene(){
+        if(this.uiscene === undefined) this.uiscene = this.scene.get('UIScene');
+        return this.uiscene;
+    }
+    get_anmt(){
+        if(this.anmt === undefined) this.anmt = this.scene.get('Animation');
+        return this.anmt;
+    }
+    get_handler(){
+        if(this.handler === undefined) this.handler = this.scene.get('Handler');
+        return this.handler;
+    }
+    get_speaker(){
+        if(this.speaker === undefined) this.speaker = this.scene.get('Speaker');
+        return this.speaker;
+    }
 
     set_draggable  (dragItem)  {
-        var controller = this.scene.get("Controller")
         //set physics of the ball
         dragItem.setCollideWorldBounds(true);
-
         //allow items to be dragged
-        controller.input.setDraggable(dragItem);
+        this.get_controller().input.setDraggable(dragItem);
     }
 
 
@@ -20,119 +38,171 @@ class SceneManager extends Phaser.Scene{
     }
 
 
-    create_game(){
-        var scenemng = this;
-        var controller = this.scene.get('Controller');
-        var handler = this.scene.get('Handler');
-        var speaker = this.scene.get('Speaker');
-        var anmt = this.scene.get('Animation');
-
+    create_game(){  
+        this.create_drop_item();
+        this.create_obstacle();
+        this.create_drag_item();
+        //set property 
+        this.set_draggable( this.get_drag_item().sprite);
+        this.set_droppable( this.get_controller().drop[0].sprite);
+        this.set_droppable( this.get_controller().drop[1].sprite);
+        //in front or behind case     --this must be initialize after initializing dropzone and drag_item--
+        this.set_case();
+        //setting up text
+        this.create_sentence();
+        this.get_controller().sound = this.item_factory( /* preset posX */550, /* preset posY */170, 'sound');
+        //setting up sound
+        this.get_speaker().say(this.get_controller().sound, this.get_statement());
+        this.get_speaker().say(this.get_controller().sentence.text, this.get_statement());
+        //animation comes fade
+        this.get_anmt().animation_fade_screen('fade in', 1000);
+    }
+    create_drop_item(){
         //setting up dropping zone
-        controller.drop = [];
+        this.get_controller().drop = [];
         //infront is case 0
-        controller.drop[0] = scenemng.item_factory(controller.dropX, controller.dropY, "drop").setDepth(-1);  
+        this.get_controller().drop[0] = {
+            description: "in front of",
+            case: false,
+            sprite: null,
+            init: () => this.get_controller().drop[0].sprite = this.item_factory(/* dropX */250, /* dropY */500, "drop").setDepth(-1)
+        };
+        this.get_controller().drop[0].init();
         //behind is case 1 
-        controller.drop[1] = scenemng.item_factory(controller.dropX, controller.dropY, "drop1").setDepth(-1);  
-
-        
-        var obstacle = [];
-        obstacle[0] = {
+        this.get_controller().drop[1] = {
+            description: "behind of",
+            case: false,
+            sprite: null,
+            init: () => this.get_controller().drop[1].sprite = this.item_factory(/* dropX */250, /* dropY */500, "drop1").setDepth(-1)
+        };
+        this.get_controller().drop[1].init();
+    }
+    set_case(){
+        this.get_controller().drop[this.get_controller().get_random_int(0,1)].case = true;
+        if(this.get_controller().drop[0].case === true)
+            this.get_handler().drag_and_drop(this.get_drag_item().sprite, this.get_controller().drop[0].sprite, this.get_controller().drop[1].sprite);
+        else
+            this.get_handler().drag_and_drop(this.get_drag_item().sprite, this.get_controller().drop[1].sprite, this.get_controller().drop[0].sprite);
+    }
+    get_case(){
+        for(let i = 0; i < this.get_controller().drop.length; i++){
+            if(this.get_controller().drop[i].case === true)
+                return this.get_controller().drop[i].description;
+        }
+    }
+    get_case_index(){
+        for(let i = 0; i < this.get_controller().drop.length; i++){
+            if(this.get_controller().drop[i].case === true)
+                return i;
+        }
+    }
+    create_obstacle(){
+        this.get_controller().obstacle_item = [];
+        this.get_controller().obstacle_item[0] = {
             item: 'bag',
             offsetX: 0,
-            offsetY: -180
-        };
-        obstacle[1] = {
+            offsetY: -180,
+            flag: false,
+            sprite: null,
+            init: () => {
+                this.get_controller().obstacle_item[0].sprite = this.item_factory(/* dropX */250 + /* offsetX */0, /* dropY */500 + /* offsetY */-180, /* item */'bag')
+                this.get_controller().obstacle_item[0].flag = true;
+            }
+        }
+        this.get_controller().obstacle_item[1] = {
             item: 'cactus',
             offsetX: 50,
-            offsetY: -100
-        };
-        var randIndex2 = controller.get_random_int(0,1);
-        //setting up initial possition
-        controller.obstacle_item = scenemng.item_factory(controller.dropX + obstacle[randIndex2].offsetX, 
-            controller.dropY + obstacle[randIndex2].offsetY, obstacle[randIndex2].item);
-
-
-        controller.drag = [];
-        controller.drag[0] = {
+            offsetY: -100,
+            flag: false,
+            sprite: null,
+            init: () => {
+                this.get_controller().obstacle_item[1].sprite = this.item_factory(/* dropX */250 + /* offsetX */50, /* dropY */500 + /* offsetY */-100, /* item */'cactus')
+                this.get_controller().obstacle_item[1].flag = true;
+            }
+        }
+        this.get_controller().obstacle_item[this.get_controller().get_random_int(0,1)].init();
+    }
+    create_drag_item(){
+        this.get_controller().drag = [];
+        this.get_controller().drag[0] = {
             item: 'ball',
             offSet: [
                 {
-                    X: 0,
-                    Y: -100
+                    X: 450,     //for true pos only
+                    Y: 650      //for true pos only
                 },
                 {   
-                    X:-200,
-                    Y: -200
-                }
-            ]
+                    X: 330,     //for true pos only
+                    Y: 540      //for true pos only
+                }   
+            ],
+            flag: false,
+            sprite: null,
+            init: () =>  {
+                this.get_controller().drag[0].sprite = this.item_factory(/* dragX */1200, /* dragY */700, /* item */'ball');
+                this.get_controller().drag[0].flag = true;
+            }
         };
-        controller.drag[1] = {
+        this.get_controller().drag[1] = {
             item: 'book',
             offSet:[
                 {
-                    X: -50,
-                    Y: -120
+                    X: 450,       //for true pos only
+                    Y: 650      //for true pos only
                 },
                 {
-                    X: -200,
-                    Y: -240
+                    X: 330,     //for true pos only
+                    Y: 500      //for true pos only
                 }
-            ]
-        };
-
-        controller.dragType = controller.get_random_int(0,1);  //track drag object type
-        //setting up initial possition
-        controller.drag_item = scenemng.item_factory(controller.dragX, controller.dragY, controller.drag[controller.dragType].item);
-
-        scenemng.set_draggable( controller.drag_item);
-        scenemng.set_droppable( controller.drop[0]);
-        scenemng.set_droppable( controller.drop[1]);
-
-        //in front or behind case
-        controller.caseType = controller.get_random_int(0,1);
-        if(controller.caseType == 0)
-            handler.drag_and_drop(controller.drag_item, controller.drop[0], controller.drop[1], controller.dragX, controller.dragY, controller.drop[1]);
-        else 
-            handler.drag_and_drop(controller.drag_item, controller.drop[1], controller.drop[0], controller.dragX, controller.dragY, controller.drop[1]);
-
-
-        var tmp;
-        if(controller.caseType == 0) tmp = 'in front of';
-        else tmp = 'behind of'
-
-        var sentence = 'Put the ' + controller.drag[controller.dragType].item + ' ' + tmp + ' the ' + obstacle[randIndex2].item;
-        //setting up text
-        controller.sentence = controller.add.text(700, 200, sentence, 
-            {
-                fontSize: '40px',
-                fontFamily: 'Arial',
-                color: '#AAAAAAA',
-                align: 'center',
-                lineSpacing: 44,
+            ],
+            flag: false,
+            sprite: null,
+            init: () =>  {
+                this.get_controller().drag[1].sprite = this.item_factory(/* dragX */1200, /* dragY */700, /* item */'book');
+                this.get_controller().drag[1].flag = true;
             }
-        ).setInteractive({ useHandCursor: true });
-        controller.sound = scenemng.item_factory( 550, 170, 'sound');
-        //setting up sound
-        speaker.say(controller.sound,sentence);
-        speaker.say(controller.sentence,sentence);
-
-        anmt.animation_fade_screen('fade in', 1000);
+        };
+        this.get_controller().drag[this.get_controller().get_random_int(0,1)].init();
+    }
+    create_sentence(){
+        this.get_controller().sentence = {
+            text: null,
+            init: () => this.get_controller().sentence.text = this.get_controller().add.text(/* preset posX */700, /* preset posY */200, this.get_statement(), 
+                {
+                    fontSize: '40px',
+                    fontFamily: 'Arial',
+                    color: '#AAAAAAA',
+                    align: 'center',
+                    lineSpacing: 44,
+                }
+            ).setInteractive({ useHandCursor: true })
+        }
+        this.get_controller().sentence.init();
+    }
+    get_statement(){
+        return 'Put the ' + this.get_drag_item().item + ' ' + this.get_case() + ' the ' + this.get_obstacle_item().item
+    }
+    get_obstacle_item(){
+        for(let i = 0; i < this.get_controller().obstacle_item.length; i++){
+            if(this.get_controller().obstacle_item[i].flag === true)
+                return this.get_controller().obstacle_item[i];
+        }
+    }
+    get_drag_item(){
+        for(let i = 0; i < this.get_controller().drag.length; i++){
+            if(this.get_controller().drag[i].flag === true)
+                return this.get_controller().drag[i];
+        }
     }
     clear_current_game(){
-        var controller = this.scene.get("Controller");
-
-        controller.destroy(controller.drop[0]);
-        controller.destroy(controller.drop[1]);
-        controller.destroy(controller.drag_item);
-        controller.destroy(controller.obstacle_item);
-        controller.destroy(controller.sound);
-        controller.destroy(controller.sentence);  
+        this.get_controller().destroy(this.get_controller().drop[0].sprite);
+        this.get_controller().destroy(this.get_controller().drop[1].sprite);
+        this.get_controller().destroy(this.get_drag_item().sprite);
+        this.get_controller().destroy(this.get_obstacle_item().sprite);
+        this.get_controller().destroy(this.get_controller().sound);
+        this.get_controller().destroy(this.get_controller().sentence.text);  
     }
-
-
     item_factory(posX, posY, item){
-        var controller = this.scene.get("Controller");
-
-        return controller.physics.add.sprite(posX ,posY, item).setInteractive({ pixelPerfect: true}).setOrigin(0,0);
+        return this.get_controller().physics.add.sprite(posX ,posY, item).setInteractive({ pixelPerfect: true}).setOrigin(0,0);
     }
 }
