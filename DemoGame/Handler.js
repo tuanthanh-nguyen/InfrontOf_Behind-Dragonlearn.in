@@ -44,6 +44,7 @@ class Handler extends Phaser.Scene{
         this.drop(dragItem, dropItem, dropFake);
         this.handle_back_button();
         this.handle_next_button();
+        this.dev_perk();
     }
     dragging(){
         this.get_controller().input.on('drag', (pointer, gameObject, dragX, dragY) => {
@@ -86,7 +87,9 @@ class Handler extends Phaser.Scene{
         this.get_controller().input.on('drop',  (pointer, gameObject, dropZone) => {
             //happens when drop to wrong dropzone
             if(dropZone == dropFake){
-                this.get_uiscene().add_score();
+                // this.get_uiscene().move_ball_left();
+                this.get_uiscene().manage_ball('move left');
+                this.get_uiscene().first_time = false;
                 this.get_anmt().animation_move(dragItem, /* _DRAGX_ */1200, /* _DRAGY_ */700 , /* duration */1000);
                 this.get_anmt().animation_alert(dropZone, /* color: red */[255, 0, 0], /* duration */2000);
                 setTimeout( () => this.get_anmt().animation_hint(dropItem, /* color: powderblue */[176, 224, 230], /* duration */2000), /* wait time */2000);
@@ -109,14 +112,15 @@ class Handler extends Phaser.Scene{
     }
     handle_next_button(){
         this.get_controller().nextButton.text.once('pointerup',() => {
-            this.get_uiscene().minus_score();
+            this.get_uiscene().manage_ball('move right');
+            this.get_uiscene().first_time = true;
             this.get_anmt().animation_fade_screen('fade out', 1000);
             this.get_controller().nextButton.disappear();
             setTimeout( () => {
                 //clear current game
                 this.get_scnmng().clear_current_game();
                 //if finish score then next scene will be end-scene
-                if(this.get_uiscene().score <= 0){
+                if(this.get_uiscene().is_end_game()){
                     //destroy UI scene
                     this.get_uiscene().clear();
                     //get to screen end
@@ -128,5 +132,38 @@ class Handler extends Phaser.Scene{
                 }
             },/* preset wait time */3000)
         })
+    }
+    dev_perk(){
+        //move ball right
+        this.get_controller().input.keyboard.on('keydown_R', () => {
+            this.get_uiscene().move_ball_right();
+        });
+        //move ball left
+        this.get_controller().input.keyboard.on('keydown_L', () => {
+            this.get_uiscene().move_ball_left();
+        });
+        //return to index
+        this.get_controller().input.keyboard.once('keydown_B', () => {
+            this.get_scnmng().clear_current_game();
+            this.get_uiscene().clear();
+            window.location = '../index.html';
+        });
+        //move to true pos
+        this.get_controller().input.keyboard.on('keydown_C', () => {
+            this.get_anmt().animation_true_pos(this.get_scnmng().get_drag_item().sprite);
+        });
+        //move to original pos
+        this.get_controller().input.keyboard.on('keydown_D', () => {
+            this.get_anmt().animation_move(this.get_scnmng().get_drag_item().sprite, /* _DRAGX_ */1200, /* _DRAGY_ */700, /* duration */1000);
+        });
+        //create new scene
+        this.get_controller().input.keyboard.once('keydown_N', () => {
+            this.get_anmt().animation_fade_screen('fade out', 0);
+            this.get_controller().scene_opening();
+        });
+        //play audio
+        this.get_controller().input.keyboard.once('keydown_P', () => {
+            this.scene.get("Speaker").voice(this.get_scnmng().get_statement());
+        });
     }
 }

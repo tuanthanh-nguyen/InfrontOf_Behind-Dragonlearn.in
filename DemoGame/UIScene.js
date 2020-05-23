@@ -6,6 +6,12 @@ class UIScene extends Phaser.Scene{
         this.score = this.number_of_questions;
         this.check_flag = false;
 
+        this.left_side = [];
+        for (let i = 0; i < this.number_of_questions; i++){
+            this.left_side[i] = 1;
+        }
+        this.right_side = [];
+
         const _POSX_ = 630;
         const _POSY_ = 70;
         const _BALL_WIDTH_ = 40;
@@ -42,32 +48,65 @@ class UIScene extends Phaser.Scene{
 
         this.get_handler().handle_back_button();
     }
-    minus_score(){
-        //event happens when the ball is in right dropzone
-        //check_flag is true when no wrong answer before happens in a scene
-        if( this.score > 0 && this.check_flag == false){
-            this.score--;
-            //animation to move the process ball to the right
-            this.get_anmt().animation_move(this.process_ball[this.score], 
-                this.process_ball[this.score].x + this.number_of_questions * /* the width of each ball */40, /* _POSY_: */70, /* duration */1000);
+    // move_ball_right(){
+    //     //event happens when the ball is in right dropzone
+    //     //check_flag is true when no wrong answer before happens in a scene
+    //     if( this.score > 0 && this.check_flag == false){
+    //         this.score--;
+    //         //animation to move the process ball to the right
+    //         this.get_anmt().animation_move(this.process_ball[this.score], 
+    //             this.process_ball[this.score].x + this.number_of_questions * /* _BALL_WIDTH_ */40, /* _POSY_: */70, /* preset duration */1000);
+    //     }
+    //     else
+    //         this.check_flag = false;
+    //     // this.registry.set('score', this.score);
+    // }
+    // move_ball_left(){
+    //     //event happens when the ball in is wrong dropzone
+    //     //check_flag ensure to update one time even when player keep choosing wrong
+    //     if(this.score < this.number_of_questions && this.check_flag == false){
+    //         //animation to move the process ball to the right
+    //         this.get_anmt().animation_move(this.process_ball[this.score], 
+    //             this.process_ball[this.score].x - this.number_of_questions * /* _BALL_WIDTH_ */40, /* _POSY_: */70, /* preset duration */1000);
+    //         this.score++;
+    //         this.check_flag = true;
+    //     }
+    //     else
+    //         console.log("nothing happens"); //for debugging
+    //     this.check_flag = true;
+    // }
+    manage_ball(flag){
+        if(this.first_time == true && flag == 'move left'){
+            this.move_ball_left();
         }
-        else
-            this.check_flag = false;
-        // this.registry.set('score', this.score);
+        if(this.first_time == true && flag == 'move right'){
+            this.move_ball_right();
+        }
     }
-    add_score(){
-        //event happens when the ball in is wrong dropzone
-        //check_flag ensure to update one time even when player keep choosing wrong
-        if(this.score < this.number_of_questions && this.check_flag == false){
-            //animation to move the process ball to the right
-            this.get_anmt().animation_move(this.process_ball[this.score], 
-                this.process_ball[this.score].x - this.number_of_questions * /* the width of each ball */40, /* _POSY_: */70, /* duration */1000);
-            this.score++;
-            this.check_flag = true;
+    move_ball_right(){
+        if(this.left_side.length != 0){
+            let id = this.left_side.length - 1;
+            this.right_side.push(this.left_side.pop());
+            this.get_anmt().animation_move(this.process_ball[id], this.process_ball[id].x + this.number_of_questions * /* _BALL_WIDTH_ */40, /* _POSY_: */70, /* preset duration */1000);
         }
-        else
-            console.log("nothing happens"); //for debugging
-        this.check_flag = true;
+    }
+    move_ball_left(){
+        if(this.right_side.length != 0){
+            this.left_side.push(this.right_side.shift());
+            let id = this.left_side.length - 1;
+            this.get_anmt().animation_move(this.process_ball[id], this.process_ball[id].x - this.number_of_questions * /* _BALL_WIDTH_ */40, /* _POSY_: */70, /* preset duration */1000);
+        }
+    }
+    is_end_game(){
+        if(this.left_side.length == 0) return true;
+        return false;
+    }
+    move_ball(item, flag){
+        if(flag === 'add')
+        this.get_anmt().animation_move(item, item.x - this.number_of_questions * 40, 70, 1000);
+        if(flag === 'minus')   
+        this.get_anmt().animation_move(this.process_ball[this.curr_ind], 
+            this.process_ball[this.curr_ind].x + this.number_of_questions * 40, 70, 1000);
     }
     create_process_ball(){
         this.graphics = this.add.graphics();
@@ -78,14 +117,16 @@ class UIScene extends Phaser.Scene{
         //process ball frame
         this.graphics.fillStyle/* presetColor */(0xA59E9D, 0.3);
         this.graphics.fillRoundedRect(/* _POSX_: */630 - /*offset value for displaying frame*/20, /* _POSY_: */70 - /*offset value for displaying frame*/20, 
-            /* the length which is propotional to number of question */(this.number_of_questions * /* the width of each ball */40 * 2), /* preset- height of frame */40);
+            /* the length which is propotional to number of question */(this.number_of_questions * /* _BALL_WIDTH_ */40 * 2), /* preset- height of frame */40);
         //create balls 
         this.process_ball = [];
         for (let i = 0; i < this.number_of_questions; i++)
         {
-            this.process_ball[i] = this.add.sprite(/* _POSX_: */630 + i*/* the width of each ball */40, /* _POSY_: */70, 'process_ball');
+            this.process_ball[i] = this.get_scnmng().item_factory(/* _POSX_: */630 + i*/* _BALL_WIDTH_ */40, /* _POSY_: */70, 'process_ball').setOrigin(0.5);
             this.process_ball[i].setScale(2);
+            this.process_ball[i].setCollideWorldBounds(true);
         }
+        this.first_time = true;
     }
     create_button(){
         //next button
@@ -103,12 +144,12 @@ class UIScene extends Phaser.Scene{
                 }
             ).setInteractive({ useHandCursor: true })./* preset alpha */setAlpha(0),
             disappear: () => {
-                this.get_anmt().animation_fade_item(this.get_controller().nextButton.rect, /* specify type */'fade out', /* duration */1000);
-                this.get_anmt().animation_fade_item(this.get_controller().nextButton.text, /* specify type */'fade out', /* duration */1000);
+                this.get_anmt().animation_fade_item(this.get_controller().nextButton.rect, /* specify type */'fade out', /* preset duration */1000);
+                this.get_anmt().animation_fade_item(this.get_controller().nextButton.text, /* specify type */'fade out', /* preset duration */1000);
             },
             show: () => {
-                this.get_anmt().animation_fade_item(this.get_controller().nextButton.rect, /* specify type */null, /* duration */1000);
-                this.get_anmt().animation_fade_item(this.get_controller().nextButton.text, /* specify type */null, /* duration */1000);
+                this.get_anmt().animation_fade_item(this.get_controller().nextButton.rect, /* specify type */null, /* preset duration */1000);
+                this.get_anmt().animation_fade_item(this.get_controller().nextButton.text, /* specify type */null, /* preset duration */1000);
             }
         };
 
