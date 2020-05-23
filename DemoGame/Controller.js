@@ -1,11 +1,6 @@
 class Controller extends Phaser.Scene{
     constructor(){
         super("Controller");
-
-        this.dropX = 250;
-        this.dropY = 500;
-        this.dragX = 1200;
-        this.dragY = 700;
     }
 
 
@@ -46,14 +41,21 @@ class Controller extends Phaser.Scene{
             controller.destroy(controller.start_button);
         });
     }
-
+    /**
+     * return an int number from range
+     * @param {number} min 
+     * @param {number} max 
+     */
     get_random_int(min, max) {
         min = Math.ceil(min);
         max = Math.floor(max);
         return Math.floor(Math.random() * (max - min + 1)) + min;
     }
     
-
+    /**
+     * decontructor an item
+     * @param {Phaser.Object} item 
+     */
     destroy(item){
         if(item!=null) {
             item.destroy(true);
