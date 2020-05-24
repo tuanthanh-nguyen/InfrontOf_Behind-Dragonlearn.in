@@ -107,7 +107,7 @@ class Handler extends Phaser.Scene{
         this.get_controller().backButton.text.once('pointerup',() => {
             this.get_scnmng().clear_current_game();
             this.get_uiscene().clear();
-            window.location = '../index.html';
+            window.location = 'index.html';
         })
     }
     handle_next_button(){
@@ -124,7 +124,7 @@ class Handler extends Phaser.Scene{
                     //destroy UI scene
                     this.get_uiscene().clear();
                     //get to screen end
-                    window.location='../win_screen.html';
+                    window.location='win_screen.html';
                 }
                 else {
                     //change to next scene                     
@@ -146,7 +146,7 @@ class Handler extends Phaser.Scene{
         this.get_controller().input.keyboard.once('keydown_B', () => {
             this.get_scnmng().clear_current_game();
             this.get_uiscene().clear();
-            window.location = '../index.html';
+            window.location = 'index.html';
         });
         //move to true pos
         this.get_controller().input.keyboard.once('keydown_C', () => {
