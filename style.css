@@ -235,7 +235,7 @@ nav {
     margin-bottom: 20px;
     background-repeat: no-repeat;
     background-position: top center;
-    background-image: url(image/dragon.png);
+    background-image: url(assets/dragon.png);
 }
 
 .t-card-completed--button {

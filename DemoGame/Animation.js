@@ -45,10 +45,11 @@ class Animation extends Phaser.Scene{
     /**
      * fade a single item 
      * @param {Phaser.Object} item - item to fade 
-     * @param {*} flag - for specified the type of fading 
-     * @param {*} duration - time interval till end changing tint color
+     * @param {boolean} flag - for specified the type of fading 
+     * @param {number} duration - time interval till end changing tint color
      */
     animation_fade_item(item,flag,duration){
+        if(item === null || item === undefined) return;
         let v1 = 0, v2 = 1;
         if(flag == 'fade out') {
             v1 = 1;
@@ -96,7 +97,7 @@ class Animation extends Phaser.Scene{
      * for changing tint of objects
      * @param {Phaser.Object} item - could be anything of Phaser object
      * @param {color[3]} color     - color must be an array with 3 elements denotes 3 rgb colors
-     * @param {*} duration         - time interval till end changing tint color
+     * @param {number} duration         - time interval till end changing tint color
      */
     animation_alert(item, color, duration){
         this.get_controller().tweens.addCounter({
@@ -124,10 +125,12 @@ class Animation extends Phaser.Scene{
      */
     animation_fade_screen(flag, duration){
         this.animation_fade_item(this.get_scnmng().get_drag_item().sprite, flag, duration);
-        this.animation_fade_item(this.get_controller().drop[0].sprite, flag, duration);
-        this.animation_fade_item(this.get_controller().drop[1].sprite, flag, duration);
+        for(let i = 0; i < this.get_controller().drop_item.length ; i++){
+            this.animation_fade_item(this.get_controller().drop_item[i].sprite, flag, duration);
+        }
         this.animation_fade_item(this.get_controller().sound, flag, duration);
         this.animation_fade_item(this.get_scnmng().get_obstacle_item().sprite, flag, duration);
         this.animation_fade_item(this.get_controller().sentence.text, flag, duration);
+        this.animation_fade_item(this.get_controller().road, flag, duration);
     }
 }

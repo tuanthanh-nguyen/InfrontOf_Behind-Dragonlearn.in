@@ -12,6 +12,7 @@ class UIScene extends Phaser.Scene{
         }
         this.right_side = [];
 
+        //constant to set up UI element including button and process ball
         const _POSX_ = 630;
         const _POSY_ = 70;
         const _BALL_WIDTH_ = 40;
@@ -40,13 +41,13 @@ class UIScene extends Phaser.Scene{
         return this.handler;
     }
     preload(){
-        this.load.svg('process_ball','../image/1.svg',{width:"15",height:"15"});
+        this.load.svg('process_ball','../assets/1.svg',{width:"15",height:"15"});
     }
     create(){
         this.create_button();
         this.create_process_ball();
 
-        this.get_handler().handle_back_button();
+        // this.get_handler().handle_back_button();
     }
     // move_ball_right(){
     //     //event happens when the ball is in right dropzone
@@ -76,10 +77,10 @@ class UIScene extends Phaser.Scene{
     //     this.check_flag = true;
     // }
     manage_ball(flag){
-        if(this.first_time == true && flag == 'move left'){
+        if(this.first_time === true && flag === 'move left'){
             this.move_ball_left();
         }
-        if(this.first_time == true && flag == 'move right'){
+        if(this.first_time === true && flag === 'move right'){
             this.move_ball_right();
         }
     }
@@ -98,7 +99,7 @@ class UIScene extends Phaser.Scene{
         }
     }
     is_end_game(){
-        if(this.left_side.length == 0) return true;
+        if(this.left_side.length === 0) return true;
         return false;
     }
     move_ball(item, flag){

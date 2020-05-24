@@ -56,7 +56,7 @@ class Handler extends Phaser.Scene{
         this.get_controller().input.on('dragenter', (pointer, gameObject, dropZone) => {
             dropZone.setTint(0xffff000);
             //if behind then item appears to be behind
-            if(dropZone == this.get_controller().drop[1].sprite 
+            if(dropZone === this.get_controller().drop_item[1].sprite 
             /* && gameObject.y > this.get_controller.dropY + 150 */) {gameObject.setDepth(-0.5)}
             else { gameObject.setDepth(0.5)}
     
@@ -74,7 +74,7 @@ class Handler extends Phaser.Scene{
     drag_end(dragItem){
         this.get_controller().input.on('dragend',  (pointer, gameObject, dropped) => {
             if (!dropped) 
-                this.get_anmt().animation_move(dragItem, /* _DRAGX_ */1200, /* _DRAGY_ */700, /* duration */1000);
+                this.get_anmt().animation_move(dragItem, this.get_scnmng().get_drag_item().dragX, this.get_scnmng().get_drag_item().dragY, /* duration */1000);
         });
     }
     /**
@@ -86,16 +86,16 @@ class Handler extends Phaser.Scene{
     drop(dragItem, dropItem, dropFake){
         this.get_controller().input.on('drop',  (pointer, gameObject, dropZone) => {
             //happens when drop to wrong dropzone
-            if(dropZone == dropFake){
+            if(dropZone === dropFake){
                 // this.get_uiscene().move_ball_left();
                 this.get_uiscene().manage_ball('move left');
                 this.get_uiscene().first_time = false;
-                this.get_anmt().animation_move(dragItem, /* _DRAGX_ */1200, /* _DRAGY_ */700 , /* duration */1000);
+                this.get_anmt().animation_move(dragItem, this.get_scnmng().get_drag_item().dragX, this.get_scnmng().get_drag_item().dragY, /* duration */1000);
                 this.get_anmt().animation_alert(dropZone, /* color: red */[255, 0, 0], /* duration */2000);
                 setTimeout( () => this.get_anmt().animation_hint(dropItem, /* color: powderblue */[176, 224, 230], /* duration */2000), /* wait time */2000);
             }
             //happens when drop to right dropzone
-            if(dropZone == dropItem ){
+            if(dropZone === dropItem ){
                 gameObject.input.enabled = false;   
                 this.get_anmt().animation_true_pos(gameObject);
                 dropZone.setTint(0x00ff00); 
@@ -135,11 +135,11 @@ class Handler extends Phaser.Scene{
     }
     dev_perk(){
         //move ball right
-        this.get_controller().input.keyboard.on('keydown_R', () => {
+        this.get_controller().input.keyboard.once('keydown_R', () => {
             this.get_uiscene().move_ball_right();
         });
         //move ball left
-        this.get_controller().input.keyboard.on('keydown_L', () => {
+        this.get_controller().input.keyboard.once('keydown_L', () => {
             this.get_uiscene().move_ball_left();
         });
         //return to index
@@ -149,11 +149,11 @@ class Handler extends Phaser.Scene{
             window.location = '../index.html';
         });
         //move to true pos
-        this.get_controller().input.keyboard.on('keydown_C', () => {
+        this.get_controller().input.keyboard.once('keydown_C', () => {
             this.get_anmt().animation_true_pos(this.get_scnmng().get_drag_item().sprite);
         });
         //move to original pos
-        this.get_controller().input.keyboard.on('keydown_D', () => {
+        this.get_controller().input.keyboard.once('keydown_D', () => {
             this.get_anmt().animation_move(this.get_scnmng().get_drag_item().sprite, /* _DRAGX_ */1200, /* _DRAGY_ */700, /* duration */1000);
         });
         //create new scene

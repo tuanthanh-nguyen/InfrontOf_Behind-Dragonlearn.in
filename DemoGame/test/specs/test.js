@@ -80,7 +80,7 @@ describe('DragonLearn.in Unit Testing', function() {
       item.destroy(true);
       item = null;
     })
-    it('check if item is moved from (200, 200) to (400, 300) in 1s', function(done) {
+    it('check if item is moved from (200, 200) to (400, 300)', function(done) {
       var timeline = scene.tweens.createTimeline();
         timeline.add({
             targets: item,
@@ -96,7 +96,7 @@ describe('DragonLearn.in Unit Testing', function() {
         done();
       }, 1000);
     })
-    it('check if item fading-alpha is 0 in 1s', function(done) {
+    it('check if item fading-alpha is 0', function(done) {
       var timeline = scene.tweens.createTimeline();
         timeline.add({
             targets: item,
