@@ -1,40 +1,12 @@
 class Handler extends Phaser.Scene{
     constructor(){
         super("Handler");
-        const _DROPX_ = 250;
-        const _DROPY_ = 500;
-        const _DRAGX_ = 1200;
-        const _DRAGY_ = 700;
-    }
-    //Getter and setter function//
-    /*
-        Since the phaser has kinda a mixture of JS ES6 and the game canvas only operate in one scope which acts as a class.
-        In here, i choose the controller class as the inter-mediate class to run the game.
-        As a result, other classes have to borrow the scope of each others in order to be fully functional.
-    */
-    get_controller(){
-        if(this.controller === undefined) this.controller = this.scene.get('Controller');
-        return this.controller;
-    }
-
-    get_uiscene(){
-        if(this.uiscene === undefined) this.uiscene = this.scene.get('UIScene');
-        return this.uiscene;
-    }
-
-    get_anmt(){
-        if(this.anmt === undefined) this.anmt = this.scene.get('Animation');
-        return this.anmt;
-    }
-    get_scnmng(){
-        if(this.scnmng === undefined) this.scnmng = this.scene.get('SceneManager');
-        return this.scnmng;
     }
     /**
      * for handling all mouse events
-     * @param {arcadeSprite} dragItem - sprite object
-     * @param {arcadeSprite} dropItem - sprite object
-     * @param {arcadeSprite} dropFake - sprite object
+     * @param {Object} dragItem - pattern object with sprite
+     * @param {Object} dropItem - pattern object with sprite
+     * @param {Object} dropFake - pattern object with sprite
      */
     drag_and_drop  (dragItem, dropItem, dropFake)  {
         this.dragging();
@@ -47,123 +19,105 @@ class Handler extends Phaser.Scene{
         this.dev_perk();
     }
     dragging(){
-        this.get_controller().input.on('drag', (pointer, gameObject, dragX, dragY) => {
+        controller.input.on('drag', (pointer, gameObject, dragX, dragY) => {
             gameObject.x = dragX;
             gameObject.y = dragY;
         });
     }
     drag_enter(){
-        this.get_controller().input.on('dragenter', (pointer, gameObject, dropZone) => {
+        controller.input.on('dragenter', (pointer, gameObject, dropZone) => {
             dropZone.setTint(0xffff000);
             //if behind then item appears to be behind
-            if(dropZone === this.get_controller().drop_item[1].sprite 
+            if(dropZone === controller.drop_item[1].sprite 
             /* && gameObject.y > this.get_controller.dropY + 150 */) {gameObject.setDepth(-0.5)}
             else { gameObject.setDepth(0.5)}
     
         });
     }
     drag_leave(){
-        this.get_controller().input.on('dragleave', (pointer, gameObject, dropZone) => {
+        controller.input.on('dragleave', (pointer, gameObject, dropZone) => {
             dropZone.clearTint();
         });
     }
     /**
      * if player release the mouse not in the specified zone
-     * @param {arcadeSprite} dragItem - sprite object
+     * @param {Object} dragItem - pattern object with sprite
      */
     drag_end(dragItem){
-        this.get_controller().input.on('dragend',  (pointer, gameObject, dropped) => {
+        controller.input.on('dragend',  (pointer, gameObject, dropped) => {
             if (!dropped) 
-                this.get_anmt().animation_move(dragItem, this.get_scnmng().get_drag_item().dragX, this.get_scnmng().get_drag_item().dragY, /* duration */1000);
+                anmt.animation_move(dragItem.sprite, dragItem.dragX, dragItem.dragY, /* duration */1000);
         });
     }
     /**
-     * if playser release the mouse in the specified zone
-     * @param {arcadeSprite} dragItem - sprite object
-     * @param {arcadeSprite} dropItem - sprite object
-     * @param {arcadeSprite} dropFake - sprite object
+     * for handling all mouse events
+     * @param {Object} dragItem - pattern object with sprite
+     * @param {Object} dropItem - pattern object with sprite
+     * @param {Object} dropFake - pattern object with sprite
      */
     drop(dragItem, dropItem, dropFake){
-        this.get_controller().input.on('drop',  (pointer, gameObject, dropZone) => {
-            //happens when drop to wrong dropzone
-            if(dropZone === dropFake){
-                // this.get_uiscene().move_ball_left();
-                this.get_uiscene().manage_ball('move left');
-                this.get_uiscene().first_time = false;
-                this.get_anmt().animation_move(dragItem, this.get_scnmng().get_drag_item().dragX, this.get_scnmng().get_drag_item().dragY, /* duration */1000);
-                this.get_anmt().animation_alert(dropZone, /* color: red */[255, 0, 0], /* duration */2000);
-                setTimeout( () => this.get_anmt().animation_hint(dropItem, /* color: powderblue */[176, 224, 230], /* duration */2000), /* wait time */2000);
-            }
-            //happens when drop to right dropzone
-            if(dropZone === dropItem ){
-                gameObject.input.enabled = false;   
-                this.get_anmt().animation_true_pos(gameObject);
-                dropZone.setTint(0x00ff00); 
-                setTimeout( () => this.get_controller().nextButton.show(), /* preset wait time */3000);
-            }   
+        controller.input.on('drop',  (pointer, gameObject, dropZone) => {
+            if(dropZone === dropItem.sprite) this.drop_correct(gameObject, dropZone);
+            if(dropZone === dropFake.sprite) this.drop_wrong(dragItem, dropFake);
         });
     }
+    /**
+     * for right wrong zone
+     * @param {arcadeSprite} dragItem - sprite phaser
+     * @param {arcadeSprite} dropItem - sprite phaser
+     */
+    drop_correct(drag, drop){
+        drag.input.enabled = false;   
+        anmt.animation_true_pos(drag);
+        drop.setTint(0x00ff00); 
+        setTimeout( () => controller.nextButton.show(), /* preset wait time */3000);
+    }
+    /**
+     * for drop wrong zone
+     * @param {Object} drag 
+     * @param {*} drop 
+     */
+    drop_wrong(drag, drop){
+        uiscene.manage_ball('move left');
+        uiscene.first_time = false;
+        anmt.animation_move(drag.sprite, drag.dragX, drag.dragY, /* duration */1000);
+        anmt.animation_alert(drop.sprite, /* color: red */[255, 0, 0], /* duration */2000);
+        setTimeout( () => anmt.animation_hint(drop.sprite, /* color: powderblue */[176, 224, 230], /* duration */2000), /* wait time */2000);
+    }
     handle_back_button(){
-        this.get_controller().backButton.text.once('pointerup',() => {
-            this.get_scnmng().clear_current_game();
-            this.get_uiscene().clear();
-            window.location = 'index.html';
-        })
+        controller.backButton.text.once('pointerup',() => uiscene.manage_back_button() )
     }
     handle_next_button(){
-        this.get_controller().nextButton.text.once('pointerup',() => {
-            this.get_uiscene().manage_ball('move right');
-            this.get_uiscene().first_time = true;
-            this.get_anmt().animation_fade_screen('fade out', 1000);
-            this.get_controller().nextButton.disappear();
-            setTimeout( () => {
-                //clear current game
-                this.get_scnmng().clear_current_game();
-                //if finish score then next scene will be end-scene
-                if(this.get_uiscene().is_end_game()){
-                    //destroy UI scene
-                    this.get_uiscene().clear();
-                    //get to screen end
-                    window.location='win_screen.html';
-                }
-                else {
-                    //change to next scene                     
-                    this.get_controller().scene_opening();
-                }
-            },/* preset wait time */3000)
-        })
+        controller.nextButton.text.once('pointerup',() => uiscene.manage_next_button() )
     }
     dev_perk(){
         //move ball right
-        this.get_controller().input.keyboard.once('keydown_R', () => {
-            this.get_uiscene().move_ball_right();
+        controller.input.keyboard.on('keydown_R', () => {
+            uiscene.move_ball_right();
         });
         //move ball left
-        this.get_controller().input.keyboard.once('keydown_L', () => {
-            this.get_uiscene().move_ball_left();
+        controller.input.keyboard.on('keydown_L', () => {
+            uiscene.move_ball_left();
         });
         //return to index
-        this.get_controller().input.keyboard.once('keydown_B', () => {
-            this.get_scnmng().clear_current_game();
-            this.get_uiscene().clear();
-            window.location = 'index.html';
+        controller.input.keyboard.on('keydown_B', () => {
+            uiscene.manage_back_button();
         });
         //move to true pos
-        this.get_controller().input.keyboard.once('keydown_C', () => {
-            this.get_anmt().animation_true_pos(this.get_scnmng().get_drag_item().sprite);
+        controller.input.keyboard.on('keydown_C', () => {
+            anmt.animation_true_pos(scnmng.get_drag_item().sprite);
         });
         //move to original pos
-        this.get_controller().input.keyboard.once('keydown_D', () => {
-            this.get_anmt().animation_move(this.get_scnmng().get_drag_item().sprite, /* _DRAGX_ */1200, /* _DRAGY_ */700, /* duration */1000);
+        controller.input.keyboard.on('keydown_D', () => {
+            anmt.animation_move(scnmng.get_drag_item().sprite, scnmng.get_drag_item().dragX, scnmng.get_drag_item().dragY, /* duration */1000);
         });
         //create new scene
-        this.get_controller().input.keyboard.once('keydown_N', () => {
-            this.get_anmt().animation_fade_screen('fade out', 0);
-            this.get_controller().scene_opening();
+        controller.input.keyboard.once('keydown_N', () => {
+            uiscene.manage_next_button();
         });
         //play audio
-        this.get_controller().input.keyboard.once('keydown_P', () => {
-            this.scene.get("Speaker").voice(this.get_scnmng().get_statement());
+        controller.input.keyboard.on('keydown_P', () => {
+            speaker.voice(scnmng.get_statement());
         });
     }
 }

@@ -11,10 +11,14 @@ class Speaker extends Phaser.Scene{
     say(item, messeage) {
         item.on('pointerdown', () => this.voice(messeage))
     }
+    /**
+     * say the audio with context given
+     * @param {String} messeage - only string
+     */
     voice(messeage){
         let msg = new SpeechSynthesisUtterance();
             let voices = window.speechSynthesis.getVoices();
-            msg.voice = voices[this.scene.get('SceneManager').get_random_int(0,10)];
+            msg.voice = voices[scnmng.get_random_int(0,10)];
             msg.voiceURI = "native";
             msg.volume = 1;
             msg.rate = 1;

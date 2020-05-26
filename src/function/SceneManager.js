@@ -2,36 +2,6 @@ class SceneManager extends Phaser.Scene{
     constructor(){
         super("SceneManager");
     }
-
-    //Getter and setter function//
-    /*
-        Since the phaser has kinda a mixture of JS ES6 and the game canvas only operate in one scope which acts as a class.
-        In here, i choose the controller class as the inter-mediate class to run the game.
-        As a result, other classes have to borrow the scope of each others in order to be fully functional.
-    */
-   /**
-    * the scope of other classes
-    */
-    get_controller(){
-        if(this.controller === undefined) this.controller = this.scene.get('Controller');
-        return this.controller;
-    }
-    get_uiscene(){
-        if(this.uiscene === undefined) this.uiscene = this.scene.get('UIScene');
-        return this.uiscene;
-    }
-    get_anmt(){
-        if(this.anmt === undefined) this.anmt = this.scene.get('Animation');
-        return this.anmt;
-    }
-    get_handler(){
-        if(this.handler === undefined) this.handler = this.scene.get('Handler');
-        return this.handler;
-    }
-    get_speaker(){
-        if(this.speaker === undefined) this.speaker = this.scene.get('Speaker');
-        return this.speaker;
-    }
     //Set property of item
     /**
      * make item draggable
@@ -42,7 +12,7 @@ class SceneManager extends Phaser.Scene{
         //set physics of the ball
         dragItem.setCollideWorldBounds(true);
         //allow items to be dragged
-        this.get_controller().input.setDraggable(dragItem);
+        controller.input.setDraggable(dragItem);
     }
     /**
      * make item droppable
@@ -58,59 +28,61 @@ class SceneManager extends Phaser.Scene{
      * @param {config} game - basically just numbers and stuffs with specific patterns required 
      */
     create_game(game){  
-        console.log(game);
+        if(game === null || game === undefined) return;
         this.create_drop_item(game);
         this.create_obstacle_item(game);
         this.create_drag_item(game);
         //set property 
         this.set_draggable( this.get_drag_item().sprite);
-        this.set_droppable( this.get_controller().drop_item[0].sprite);
-        this.set_droppable( this.get_controller().drop_item[1].sprite);
+        this.set_droppable( controller.drop_item[0].sprite);
+        this.set_droppable( controller.drop_item[1].sprite);
         //in front or behind case     --this must be initialize after initializing dropzone and drag_item--
         this.set_case();
         //setting up text
         this.create_sentence();
-        this.get_controller().sound = this.item_factory( /* preset posX */550, /* preset posY */170, 'sound');
+        controller.sound = this.item_factory( /* preset posX */550, /* preset posY */170, 'sound');
         //setting up sound
-        this.get_speaker().say(this.get_controller().sound, this.get_statement());
-        this.get_speaker().say(this.get_controller().sentence.text, this.get_statement());
+        speaker.say(controller.sound, this.get_statement());
+        speaker.say(controller.sentence.text, this.get_statement());
         //animation comes fade
-        this.get_anmt().animation_fade_screen('fade in', /*preset duration */200 );
+        anmt.animation_fade_screen('fade in', /*preset duration */200 );
     }
     create_drop_item(game){
-        console.log('hey')
+        if(game === null || game === undefined) return;
         //setting up dropping zone
-        this.get_controller().drop_item = [];
+        controller.drop_item = [];
         for(let i = 0; i < game.drop_item.length ; i++){
-            this.get_controller().drop_item[i] = {
+            controller.drop_item[i] = {
                 item: game.drop_item[i].item,
                 description: game.drop_item[i].description,
                 case: false,
                 sprite: null,
-                init: () => this.get_controller().drop_item[i].sprite = this.item_factory(game.drop_item[i].DROPX, game.drop_item[i].DROPY, game.drop_item[i].item)./* set back to dimension */setDepth(-1)
+                init: () => controller.drop_item[i].sprite = this.item_factory(game.drop_item[i].DROPX, game.drop_item[i].DROPY, game.drop_item[i].item)./* set back to dimension */setDepth(-1)
             }
-            this.get_controller().drop_item[i].init();
+            controller.drop_item[i].init();
         }
     }
     create_obstacle_item(game){
-        this.get_controller().obstacle_item = [];
+        if(game === null || game === undefined) return;
+        controller.obstacle_item = [];
         for(let i = 0; i < game.obstacle_item.length ; i++){
-            this.get_controller().obstacle_item[i] = {
+            controller.obstacle_item[i] = {
                 item: game.obstacle_item[i].item,
                 flag: false,
                 sprite: null,
                 init: () => {
-                    this.get_controller().obstacle_item[i].sprite = this.item_factory(game.obstacle_item[i].X, game.obstacle_item[i].Y, game.obstacle_item[i].item)
-                    this.get_controller().obstacle_item[i].flag = true;
+                    controller.obstacle_item[i].sprite = this.item_factory(game.obstacle_item[i].X, game.obstacle_item[i].Y, game.obstacle_item[i].item)
+                    controller.obstacle_item[i].flag = true;
                 }
             }
         }
-        this.get_controller().obstacle_item[this.get_random_int(0,1)].init();
+        controller.obstacle_item[this.get_random_int(0,1)].init();
     }
     create_drag_item(game){
-        this.get_controller().drag_item = [];
+        if(game === null || game === undefined) return;
+        controller.drag_item = [];
         for(let i = 0; i < game.drag_item.length ; i++){
-            this.get_controller().drag_item[i] = {
+            controller.drag_item[i] = {
                 item: game.drag_item[i].item,
                 dragX: game.drag_item[i].DRAGX,
                 dragY: game.drag_item[i].DRAGY,
@@ -127,56 +99,59 @@ class SceneManager extends Phaser.Scene{
                 flag: false,
                 sprite: null,
                 init: () =>  {
-                    this.get_controller().drag_item[i].sprite = this.item_factory(game.drag_item[i].DRAGX, game.drag_item[i].DRAGY, game.drag_item[i].item);
-                    this.get_controller().drag_item[i].flag = true;
+                    controller.drag_item[i].sprite = this.item_factory(game.drag_item[i].DRAGX, game.drag_item[i].DRAGY, game.drag_item[i].item);
+                    controller.drag_item[i].flag = true;
                 }
             }
         }
-        this.get_controller().drag_item[this.get_random_int(0,1)].init();
+        controller.drag_item[this.get_random_int(0,1)].init();
     }
     create_sentence(){
-        this.get_controller().sentence = {
+        controller.sentence = {
             text: null,
-            init: () => this.get_controller().sentence.text = this.get_controller().add.text(/* preset posX */700, /* preset posY */200, this.get_statement(), 
-                {
-                    fontSize: '40px',
-                    fontFamily: 'Arial',
-                    color: '#AAAAAAA',
-                    align: 'center',
-                    lineSpacing: 44,
-                }
-            ).setInteractive({ useHandCursor: true })
+            init: () => controller.sentence.text = this.generate_text(/* preset posX */700, /* preset posY */200, this.get_statement(), '40px', /* white */'#AAAAAAA')
         }
-        this.get_controller().sentence.init();
+        controller.sentence.init();
+    }
+    generate_text(posX, posY, context, size, color){
+        return controller.add.text(posX, posY, context, 
+        {
+            fontSize: size,
+            fontFamily: 'Arial',
+            color: color,
+            align: 'center',
+            lineSpacing: 44,
+        }
+        ).setInteractive({ useHandCursor: true });
     }
     get_obstacle_item(){
-        for(let i = 0; i < this.get_controller().obstacle_item.length; i++){
-            if(this.get_controller().obstacle_item[i].flag === true)
-                return this.get_controller().obstacle_item[i];
+        for(let i = 0; i < controller.obstacle_item.length; i++){
+            if(controller.obstacle_item[i].flag === true)
+                return controller.obstacle_item[i];
         }
     }
     get_drag_item(){
-        for(let i = 0; i < this.get_controller().drag_item.length; i++){
-            if(this.get_controller().drag_item[i].flag === true)
-                return this.get_controller().drag_item[i];
+        for(let i = 0; i < controller.drag_item.length; i++){
+            if(controller.drag_item[i].flag === true)
+                return controller.drag_item[i];
         }
     }
     set_case(){
-        this.get_controller().drop_item[this.get_random_int(0,1)].case = true;
-        if(this.get_controller().drop_item[0].case === true)
-            this.get_handler().drag_and_drop(this.get_drag_item().sprite, this.get_controller().drop_item[0].sprite, this.get_controller().drop_item[1].sprite);
+        controller.drop_item[this.get_random_int(0,1)].case = true;
+        if(controller.drop_item[0].case === true)
+            handler.drag_and_drop(this.get_drag_item(), controller.drop_item[0], controller.drop_item[1]);
         else
-            this.get_handler().drag_and_drop(this.get_drag_item().sprite, this.get_controller().drop_item[1].sprite, this.get_controller().drop_item[0].sprite);
+            handler.drag_and_drop(this.get_drag_item(), controller.drop_item[1], controller.drop_item[0]);
     }
     get_case(){
-        for(let i = 0; i < this.get_controller().drop_item.length; i++){
-            if(this.get_controller().drop_item[i].case === true)
-                return this.get_controller().drop_item[i].description;
+        for(let i = 0; i < controller.drop_item.length; i++){
+            if(controller.drop_item[i].case === true)
+                return controller.drop_item[i].description;
         }
     }
     get_case_index(){
-        for(let i = 0; i < this.get_controller().drop_item.length; i++){
-            if(this.get_controller().drop_item[i].case === true)
+        for(let i = 0; i < controller.drop_item.length; i++){
+            if(controller.drop_item[i].case === true)
                 return i;
         }
     }
@@ -184,14 +159,14 @@ class SceneManager extends Phaser.Scene{
         return 'Put the ' + this.get_drag_item().item + ' ' + this.get_case() + ' the ' + this.get_obstacle_item().item
     }
     clear_current_game(){
-        for(let i = 0; i < this.get_controller().drop_item.length ; i++){
-            this.get_controller().destroy(this.get_controller().drop_item[i].sprite);
+        for(let i = 0; i < controller.drop_item.length ; i++){
+            this.destroy(controller.drop_item[i].sprite);
         }
-        this.get_controller().destroy(this.get_drag_item().sprite);
-        this.get_controller().destroy(this.get_obstacle_item().sprite);
-        this.get_controller().destroy(this.get_controller().sound);
-        this.get_controller().destroy(this.get_controller().sentence.text);  
-        this.get_controller().destroy(this.get_controller().road);  
+        this.destroy(this.get_drag_item().sprite);
+        this.destroy(this.get_obstacle_item().sprite);
+        this.destroy(controller.sound);
+        this.destroy(controller.sentence.text);  
+        this.destroy(controller.road);  
     }
     /**
      * generate item like sprite, image phaser
@@ -200,7 +175,11 @@ class SceneManager extends Phaser.Scene{
      * @param {spriteArcade} item - sprite wish to create
      */
     item_factory(posX, posY, item){
-        return this.get_controller().physics.add.sprite(posX ,posY, item).setInteractive({ pixelPerfect: true}).setOrigin(0,0);
+        //default for error arg
+        if(posX === null || posX === undefined) posX = 0;
+        if(posY === null || posY === undefined) posY = 0;
+        if(item === null || item === undefined) item = 'process_ball';
+        return controller.physics.add.sprite(posX ,posY, item).setInteractive({ pixelPerfect: true}).setOrigin(0,0);
     }
     /**
      * return an int number from range
@@ -208,8 +187,19 @@ class SceneManager extends Phaser.Scene{
      * @param {number} max 
      */
     get_random_int(min, max) {
+        if(min === null || min === undefined) min = 0;
+        if(max === null || max === undefined) max = 1;
         min = Math.ceil(min);
         max = Math.floor(max);
         return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+    /**
+     * decontructor an item
+     * @param {Phaser.Object} item 
+     */
+    destroy(item){
+        if(item === null || item === undefined) return;
+        item.destroy(true);
+        item = null;
     }
 }
