@@ -120,7 +120,7 @@ class UIScene extends Phaser.Scene{
     }
     manage_back_button(){
         scnmng.clear_current_game();
-        this.clear();
+        this.clear_UI();
         window.location = 'index.html';
     }
     clear_UI(){
