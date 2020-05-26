@@ -27,16 +27,6 @@ class Controller extends Phaser.Scene{
             scnmng.destroy(this.start_button);
         });
     }
-    /**
-     * decontructor an item
-     * @param {Phaser.Object} item 
-     */
-    destroy(item){
-        if(item != null && item != undefined) {
-            item.destroy(true);
-            item = null;
-        }
-    }
 }
 const Game1 = {
     obstacle_item: [
