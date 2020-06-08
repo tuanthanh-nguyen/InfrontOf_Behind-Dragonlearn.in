@@ -57,7 +57,7 @@ class Handler extends Phaser.Scene{
      */
     drop(dragItem, dropItem, dropFake){
         controller.input.on('drop',  (pointer, gameObject, dropZone) => {
-            if(dropZone === dropItem.sprite) this.drop_correct(gameObject, dropZone);
+            if(dropZone === dropItem.sprite) this.drop_correct(dragItem, dropItem);
             if(dropZone === dropFake.sprite) this.drop_wrong(dragItem, dropFake);
         });
     }
@@ -67,15 +67,15 @@ class Handler extends Phaser.Scene{
      * @param {arcadeSprite} dropItem - sprite phaser
      */
     drop_correct(drag, drop){
-        drag.input.enabled = false;   
-        anmt.animation_true_pos(drag);
-        drop.setTint(0x00ff00); 
+        drag.sprite.input.enabled = false;
+        anmt.animation_true_pos(drag.sprite);
+        drop.sprite.setTint(0x00ff00);
         setTimeout( () => controller.nextButton.show(), /* preset wait time */3000);
     }
     /**
      * for drop wrong zone
-     * @param {Object} drag 
-     * @param {*} drop 
+     * @param {Object} drag - pattern object with sprite
+     * @param {*} drop - pattern object with sprite
      */
     drop_wrong(drag, drop){
         uiscene.manage_ball('move left');

@@ -26,7 +26,7 @@ var game = new Phaser.Game(config);
  */
 
 
-var controller, anmt, handler, speaker, scnmng, uiscene;
+var controller =  anmt =  handler = speaker = scnmng = uiscene = undefined;
 /*
     Since the phaser has kinda a mixture of JS ES6 and the game canvas only operate in one scope which acts as a class.
     In here, i choose the controller class as the inter-mediate class to run the game.
@@ -35,7 +35,7 @@ var controller, anmt, handler, speaker, scnmng, uiscene;
 function init_scope(){
     if(controller === undefined) controller = this.game.scene.scenes[0];
     if(anmt === undefined) anmt = this.game.scene.scenes[1];
-    handler = this.game.scene.scenes[2];
+    if(handler === undefined) handler = this.game.scene.scenes[2];
     if(speaker === undefined) speaker = this.game.scene.scenes[3];
     if(scnmng === undefined) scnmng = this.game.scene.scenes[4];
     if(uiscene === undefined) uiscene = this.game.scene.scenes[5];

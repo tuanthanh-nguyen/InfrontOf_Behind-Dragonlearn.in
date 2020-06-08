@@ -16,7 +16,7 @@ class UIScene extends Phaser.Scene{
         
     }
     preload(){
-        this.load.svg('process_ball','../assets/1.svg',{width:"15",height:"15"});
+        this.load.svg('process_ball','../assets/1.svg',{width:"30",height:"30"});
     }
     create(){
         init_scope();
@@ -64,9 +64,7 @@ class UIScene extends Phaser.Scene{
         this.process_ball = [];
         for (let i = 0; i < this.number_of_questions; i++)
         {
-            this.process_ball[i] = scnmng.item_factory(/* _POSX_: */630 + i*/* _BALL_WIDTH_ */40, /* _POSY_: */70, 'process_ball').setOrigin(0.5);
-            this.process_ball[i].setScale(2);
-            this.process_ball[i].setCollideWorldBounds(true);
+            this.process_ball[i] = this.add.sprite(/* _POSX_: */630 + i*/* _BALL_WIDTH_ */40, /* _POSY_: */70, 'process_ball');
         }
         this.first_time = true;
     }
@@ -128,7 +126,6 @@ class UIScene extends Phaser.Scene{
             scnmng.destroy(this.process_ball[i]);
         }
         scnmng.destroy(this.graphics);
-        scnmng.destroy(this.line);
         scnmng.destroy(controller.nextButton.text);
         scnmng.destroy(controller.graphics1);
         scnmng.destroy(controller.backButton.text);
