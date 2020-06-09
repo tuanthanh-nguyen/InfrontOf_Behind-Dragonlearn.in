@@ -1,6 +1,5 @@
 *{
     height: 100vh;
-    background: linear-gradient(#cac2c2, rgb(175, 226, 223)); 
     font-family: sans-serif;
     text-align: center;
     margin: 0;
@@ -29,3 +28,48 @@ canvas{
         border-radius : 30px;
     }
   }
+
+  div.uchiru_bg_cell{
+    -webkit-tap-highlight-color: transparent;
+    font-family: 'PT Sans' !important;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    background-image: url(../assets/back3.png);
+  }
+  div.uchiru_bg_color{
+      -webkit-tap-highlight-color: transparent;
+      font-family: 'PT Sans' !important;
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      background-image: url(../assets/back2.png);
+  }
+  div.uchiru_bg_stuff {
+      -webkit-tap-highlight-color: transparent;
+      font-family: 'PT Sans' !important;
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      background-image: url(../assets/back4.png);
+      opacity: 0.6;
+  }
+  div.uchiru_bg_color_2 {
+      -webkit-tap-highlight-color: transparent;
+      font-family: 'PT Sans' !important;
+      border: 0;  
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      z-index: -1;
+      top: 0;
+      bottom: 0;
+      background-image: url(../assets/back1.jpg);
+      background-size: 1400px;
+  }
+  
+  
+  
