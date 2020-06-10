@@ -16,7 +16,6 @@ class Handler extends Phaser.Scene{
         this.drop(dragItem, dropItem, dropFake);
         this.handle_back_button();
         this.handle_next_button();
-        this.dev_perk();
     }
     dragging(){
         controller.input.on('drag', (pointer, gameObject, dragX, dragY) => {
@@ -57,7 +56,7 @@ class Handler extends Phaser.Scene{
      */
     drop(dragItem, dropItem, dropFake){
         controller.input.on('drop',  (pointer, gameObject, dropZone) => {
-            if(dropZone === dropItem.sprite) this.drop_correct(gameObject, dropZone);
+            if(dropZone === dropItem.sprite) this.drop_correct(dragItem, dropItem);
             if(dropZone === dropFake.sprite) this.drop_wrong(dragItem, dropFake);
         });
     }
@@ -67,15 +66,15 @@ class Handler extends Phaser.Scene{
      * @param {arcadeSprite} dropItem - sprite phaser
      */
     drop_correct(drag, drop){
-        drag.input.enabled = false;   
-        anmt.animation_true_pos(drag);
-        drop.setTint(0x00ff00); 
+        drag.sprite.input.enabled = false;   
+        anmt.animation_true_pos(drag.sprite);
+        drop.sprite.setTint(0x00ff00); 
         setTimeout( () => controller.nextButton.show(), /* preset wait time */3000);
     }
     /**
      * for drop wrong zone
-     * @param {Object} drag 
-     * @param {*} drop 
+     * @param {Object} drag - pattern object with sprite
+     * @param {Object} drop - pattern object with sprite
      */
     drop_wrong(drag, drop){
         uiscene.manage_ball('move left');
@@ -89,35 +88,5 @@ class Handler extends Phaser.Scene{
     }
     handle_next_button(){
         controller.nextButton.text.once('pointerup',() => uiscene.manage_next_button() )
-    }
-    dev_perk(){
-        //move ball right
-        controller.input.keyboard.on('keydown_R', () => {
-            uiscene.move_ball_right();
-        });
-        //move ball left
-        controller.input.keyboard.on('keydown_L', () => {
-            uiscene.move_ball_left();
-        });
-        //return to index
-        controller.input.keyboard.on('keydown_B', () => {
-            uiscene.manage_back_button();
-        });
-        //move to true pos
-        controller.input.keyboard.on('keydown_C', () => {
-            anmt.animation_true_pos(scnmng.get_drag_item().sprite);
-        });
-        //move to original pos
-        controller.input.keyboard.on('keydown_D', () => {
-            anmt.animation_move(scnmng.get_drag_item().sprite, scnmng.get_drag_item().dragX, scnmng.get_drag_item().dragY, /* duration */1000);
-        });
-        //create new scene
-        controller.input.keyboard.once('keydown_N', () => {
-            uiscene.manage_next_button();
-        });
-        //play audio
-        controller.input.keyboard.on('keydown_P', () => {
-            speaker.voice(scnmng.get_statement());
-        });
     }
 }

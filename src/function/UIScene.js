@@ -16,7 +16,7 @@ class UIScene extends Phaser.Scene{
         
     }
     preload(){
-        this.load.svg('process_ball','../assets/1.svg',{width:"15",height:"15"});
+        this.load.svg('process_ball','../assets/1.svg',{width:"30",height:"30"});
     }
     create(){
         init_scope();
@@ -53,9 +53,10 @@ class UIScene extends Phaser.Scene{
     create_process_ball(){
         this.graphics = this.add.graphics();
         //Line separate the process ball with the game
-        this.Line = new Phaser.Geom.Line(/* preset - x coordinate */0, /* preset - y coordinate */150, this.cameras.main.width, /* preset width */150);
+        this.Line = new Phaser.Geom.Line(/* preset - x1 coordinate */0, /* preset - y1 coordinate */150, /* preset - x2 coordinate */this.cameras.main.width, /* preset - y2 coordinate */150);
         this.graphics.lineStyle/* presetColor */(10, 0xCEEEEEE);
         this.graphics.strokeLineShape(this.Line);
+
         //process ball frame
         this.graphics.fillStyle/* presetColor */(0xA59E9D, 0.3);
         this.graphics.fillRoundedRect(/* _POSX_: */630 - /*offset value for displaying frame*/20, /* _POSY_: */70 - /*offset value for displaying frame*/20, 
@@ -64,9 +65,7 @@ class UIScene extends Phaser.Scene{
         this.process_ball = [];
         for (let i = 0; i < this.number_of_questions; i++)
         {
-            this.process_ball[i] = scnmng.item_factory(/* _POSX_: */630 + i*/* _BALL_WIDTH_ */40, /* _POSY_: */70, 'process_ball').setOrigin(0.5);
-            this.process_ball[i].setScale(2);
-            this.process_ball[i].setCollideWorldBounds(true);
+            this.process_ball[i] = this.add.sprite(/* _POSX_: */630 + i*/* _BALL_WIDTH_ */40, /* _POSY_: */70, 'process_ball');
         }
         this.first_time = true;
     }
@@ -128,7 +127,6 @@ class UIScene extends Phaser.Scene{
             scnmng.destroy(this.process_ball[i]);
         }
         scnmng.destroy(this.graphics);
-        scnmng.destroy(this.line);
         scnmng.destroy(controller.nextButton.text);
         scnmng.destroy(controller.graphics1);
         scnmng.destroy(controller.backButton.text);

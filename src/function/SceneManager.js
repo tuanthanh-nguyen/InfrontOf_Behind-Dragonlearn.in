@@ -9,8 +9,9 @@ class SceneManager extends Phaser.Scene{
      */
     set_draggable  (dragItem)  {
         if(dragItem === null || dragItem === undefined) return;
+        controller.physics.world.bounds.setTo(/*margin left*/0, /*margin up*/150, /*width*/this.cameras.main.width, /*height - offSet*/this.cameras.main.height - 150);
         //set physics of the ball
-        dragItem.setCollideWorldBounds(true);
+        dragItem.setCollideWorldBounds(true, true, true, true);
         //allow items to be dragged
         controller.input.setDraggable(dragItem);
     }

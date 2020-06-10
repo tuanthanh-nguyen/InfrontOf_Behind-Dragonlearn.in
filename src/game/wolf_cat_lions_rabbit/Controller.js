@@ -9,7 +9,7 @@ class Controller extends Phaser.Scene{
         this.load.svg('circle_drop', '../assets/334.svg',{width: "200", height: "200"});
         this.load.svg('lions', '../assets/354.svg',{width: "300", height: "300"});
         this.load.svg('wolf', '../assets/48.svg',{width: "200", height: "200"});
-        this.load.svg('drop', '../assets/52.svg',{width:"200", height:"200"});
+        this.load.svg('drop', '../assets/52.svg',{width:"400", height:"400"});
         this.load.svg('cat', '../assets/338.svg',{width:"200", height:"200"});
         this.load.svg('rabbits', '../assets/358.svg',{width:"300", height:"300"});
     }
@@ -45,14 +45,14 @@ const Game2 = {
         {
             item: 'drop',
             description: 'in front of',
-            DROPX: 200,
-            DROPY: 500
+            DROPX: 100,
+            DROPY: 400
         },
         {
             item: 'drop',
             description: 'behind of',
-            DROPX: 1500,
-            DROPY: 500
+            DROPX: 1400,
+            DROPY: 400
         }
     ],
     drag_item: [

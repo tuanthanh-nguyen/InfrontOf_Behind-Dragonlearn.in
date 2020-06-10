@@ -18,7 +18,7 @@ class Speaker extends Phaser.Scene{
     voice(messeage){
         let msg = new SpeechSynthesisUtterance();
             let voices = window.speechSynthesis.getVoices();
-            msg.voice = voices[scnmng.get_random_int(0,10)];
+            msg.voice = voices[0];
             msg.voiceURI = "native";
             msg.volume = 1;
             msg.rate = 1;
